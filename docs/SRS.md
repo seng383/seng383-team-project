@@ -49,7 +49,7 @@ Our product is a web application that brings them together around one shared wee
 | Specialist entry | A dated observation written by a linked specialist (M5). |
 | Development area | Category of a task, used for statistics: Language, Motor skills, Social-emotional, Cognitive, Self-care. |
 | Week | Monday 00:00 to Sunday 23:59, local time. |
-| Mock mode | Setting in which the AI module returns a fixed, predictable response instead of calling the AI provider. Used in tests and CI. |
+| Mock mode | Setting in which the AI module returns a fixed response for each reader role (parent or specialist) instead of calling the AI provider. Used in tests and CI. |
 
 ### 1.4 References
 
@@ -111,7 +111,7 @@ These rules are enforced by the backend for every request. Hiding a button in th
 
 Each requirement below is written as one or more user stories with acceptance criteria (AC) in *Given / When / Then* form. "The API rejects the request" means it responds with an error status (401 when not logged in, 403 when not allowed) and returns no data about the child.
 
-All eight requirements are mandatory. The release column follows the assignment: M1–M4 in v0.1, M5–M8 in v0.2.
+All eight requirements are mandatory. The release in brackets after each requirement follows the assignment: M1–M4 in v0.1, M5–M8 in v0.2.
 
 ### M1 – Login and roles (v0.1)
 
@@ -123,7 +123,7 @@ All eight requirements are mandatory. The release column follows the assignment:
 
 **US-1.2** As any user, I want to see only the screens of my own role so that I do not reach data that is not meant for me.
 
-- AC1. Given a child account, when the child opens a parent or specialist page by typing its URL, then access is denied.
+- AC1. Given an account of any role, when the user opens a page of another role by typing its URL (for example a child opening the parent dashboard, or a specialist opening the parent's linked-specialists page), then access is denied.
 - AC2. Given any role, when a request is sent to an API endpoint of another role, then the API rejects it.
 - AC3. Given no valid token, when any protected API endpoint is called, then the API rejects it with 401.
 
@@ -219,12 +219,13 @@ Acceptance criteria for US-8.1 and US-8.2:
 
 - AC1. Given the week's records, when the summary is requested, then the backend builds the prompt only from records that the reader is allowed to see (Section 2.2), and uses a different prompt for parents and for specialists.
 - AC2. Given a generated summary, when it is shown, then it carries the label "AI-generated" and lists the records it is based on, each with a link to the record.
-- AC3. Given any summary, then it contains no diagnosis, no treatment advice and no decision on behalf of the user. The screen states that the summary is a suggestion and the user decides.
+- AC3. Given a summary request, when the backend builds the prompt, then the prompt always contains the fixed instruction not to give a diagnosis, not to suggest a treatment and not to make decisions for the reader (constraint C-5).
+- AC3b. Given a generated summary, when it is shown, then the fixed note "Bu bir yapay zekâ önerisidir; karar size aittir." is displayed with it.
 - AC4. Given a week without records, when the summary is requested, then the system says there is nothing to summarize and does not call the AI provider.
 - AC5. Given that the AI provider is unreachable or returns an error, when the summary is requested, then a clear message is shown and the rest of the page keeps working.
-- AC6. Given mock mode is on (tests and CI), when the summary is requested, then the AI module returns the same fixed response every time and makes no network call.
+- AC6. Given mock mode is on (tests and CI), when the summary is requested, then the AI module returns a fixed response for the reader's role (always the same text for parents, always the same text for specialists) and makes no network call.
 
-**US-8.3** As a parent or specialist, I want to mark a summary as helpful or incorrect so that the team can see how useful the summaries are. *(Shown in example screen A.2; to confirm with the test team whether it is part of the mandatory scope.)*
+**US-8.3** As a parent or specialist, I want to mark a summary as helpful or incorrect so that the team can see how useful the summaries are. *(Required for the parent's summary in example screen A.2.)*
 
 - AC1. Given a shown summary, when the user selects "helpful" or "incorrect", then the choice is saved for that summary and shown as selected.
 
@@ -265,7 +266,7 @@ The final data model will be in the design document (Week 6). The main entities 
 
 | Req. | User stories | Release | Planned end-to-end test |
 |---|---|---|---|
-| M1 | US-1.1, US-1.2 | v0.1 | Each role logs in and lands on its own start screen; child cannot open a parent page. |
+| M1 | US-1.1, US-1.2 | v0.1 | Each role logs in and lands on its own start screen; no role can open another role's pages. |
 | M2 | US-2.1 – US-2.3 | v0.1 | Parent links and unlinks a specialist; unlinked specialist gets an error. |
 | M3 | US-3.1, US-3.2 | v0.1 | Specialist adds an event; parent and child see it in the weekly view. |
 | M4 | US-4.1 – US-4.3 | v0.1 | Parent assigns a task; child marks it done; parent sees "done". |
@@ -286,7 +287,6 @@ The final data model will be in the design document (Week 6). The main entities 
 ## 7. Open questions for the test and quality team
 
 1. Is a sign-up screen expected, or are seeded accounts enough (A-1)?
-2. Is the helpful/incorrect feedback on AI summaries (US-8.3) part of the mandatory scope?
-3. Are the five development areas in Section 1.3 enough for the statistics in M7?
-4. Is the 10 MB upload limit (US-6.1) acceptable for the documents you plan to test with?
-5. Which three flows should be the "critical flows" for the v0.2 end-to-end tests? Our proposal: login by role (M1), task assign and complete (M4), and the unlinked specialist being blocked (M2).
+2. Are the five development areas in Section 1.3 enough for the statistics in M7?
+3. Is the 10 MB upload limit (US-6.1) acceptable for the documents you plan to test with?
+4. Which three flows should be the "critical flows" for the v0.2 end-to-end tests? Our proposal: login by role (M1), assigning and completing a task (M4), and blocking an unlinked specialist (M2).
