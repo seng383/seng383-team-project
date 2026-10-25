@@ -1,15 +1,17 @@
-const { summarize, buildMessages, MOCK_SUMMARY } = require('../src/ai');
+const { summarize, buildMessages, MOCK_SUMMARIES } = require('../src/ai');
 
 describe('AI module', () => {
   const records = [{ type: 'task', title: 'Kitap oku', status: 'done' }];
 
-  test('mock mode returns the fixed summary without calling the network', async () => {
+  test('mock mode returns a fixed summary per role without calling the network', async () => {
     const fetchSpy = jest.spyOn(global, 'fetch');
     process.env.AI_MODE = 'mock';
 
-    const result = await summarize({ role: 'parent', records });
+    const parent = await summarize({ role: 'parent', records });
+    const specialist = await summarize({ role: 'specialist', records });
 
-    expect(result).toEqual({ text: MOCK_SUMMARY, mock: true });
+    expect(parent).toEqual({ text: MOCK_SUMMARIES.parent, mock: true });
+    expect(specialist).toEqual({ text: MOCK_SUMMARIES.specialist, mock: true });
     expect(fetchSpy).not.toHaveBeenCalled();
     fetchSpy.mockRestore();
   });
