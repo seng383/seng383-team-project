@@ -1,11 +1,13 @@
 // The only place in the code that talks to the AI provider (GitHub Models).
-// AI_MODE=mock (default) returns a fixed text and never calls the network, so tests and CI need no token.
+// AI_MODE=mock (default) returns a fixed text per reader role and never calls the network,
+// so tests and CI need no token.
 
 const ENDPOINT = 'https://models.github.ai/inference/chat/completions';
 
-const MOCK_SUMMARY =
-  'Bu hafta 3 görevden 2\'si tamamlandı. Uzman notlarında okuma çalışmalarına düzenli katılım görülüyor. ' +
-  'Bu bir yapay zekâ önerisidir; karar size aittir.';
+const MOCK_SUMMARIES = {
+  parent: 'Bu hafta 3 görevden 2\'si tamamlandı ve 2 etkinlik planlandı. Okuma görevi henüz bitmedi.',
+  specialist: 'Bu hafta dil alanında 2 görev tamamlandı. Son gözlem notunda okuma çalışmalarına düzenli katılım yazıyor.',
+};
 
 const RULES =
   'You summarize a child\'s weekly records for the reader. Write in Turkish, at most 5 sentences. ' +
@@ -23,7 +25,7 @@ function buildMessages(role, records) {
 
 async function summarize({ role, records }) {
   if ((process.env.AI_MODE || 'mock') === 'mock') {
-    return { text: MOCK_SUMMARY, mock: true };
+    return { text: MOCK_SUMMARIES[role === 'specialist' ? 'specialist' : 'parent'], mock: true };
   }
 
   const res = await fetch(ENDPOINT, {
@@ -44,4 +46,4 @@ async function summarize({ role, records }) {
   return { text: data.choices[0].message.content, mock: false };
 }
 
-module.exports = { summarize, buildMessages, MOCK_SUMMARY };
+module.exports = { summarize, buildMessages, MOCK_SUMMARIES };
