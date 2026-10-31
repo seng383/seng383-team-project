@@ -45,12 +45,12 @@ In Jira each work package is one epic (TF383-7 … TF383-14) and its tasks are t
 
 | Epic | Owner | Number of tasks | Planned sprint(s) |
 |---|---|---|---|
-| M1 – Login and roles (TF383-7) | Mert Akdemir | 2 | Sprint 3 |
-| M2 – Linking specialists (TF383-8) | Mert Akdemir | 3 | Sprint 3 |
-| M3 – Weekly schedule (TF383-9) | Batın Abiş | 2 | Sprint 3 |
+| M1 – Login and roles (TF383-7) | Mert Akdemir | 2 | Sprint 2 |
+| M2 – Linking specialists (TF383-8) | Mert Akdemir | 3 | Sprint 2 |
+| M3 – Weekly schedule (TF383-9) | Batın Abiş | 2 | Sprint 2 |
 | M4 – Tasks (TF383-10) | Burak Tunahan Mazman | 3 | Sprint 3 |
 | M5 – Specialist entries (TF383-11) | Batın Abiş | 3 | Sprint 4 |
-| M6 – Documents (TF383-12) | Burak Tunahan Mazman | 2 | Sprint 4 |
+| M6 – Documents (TF383-12) | Burak Tunahan Mazman | 2 | Sprint 2 |
 | M7 – Weekly statistics (TF383-13) | Batın Abiş | 1 | Sprint 4 |
 | M8 – Role-based AI summary (TF383-14) | Mert Akdemir | 2 | Sprint 4 |
 
@@ -63,11 +63,11 @@ Besides M1–M8 we track the other deliverables the same way: REQ-1 SRS draft (T
 | Sprint | Weeks | Sprint goal | Ends with |
 |---|---|---|---|
 | Sprint 1 | 4–5 | SRS draft, PMP sections 1–2, walking skeleton | Walking skeleton (v0.0), Week 5 |
-| Sprint 2 | 6 | Final SRS and design document | Final SRS and design document, Week 6 |
-| Sprint 3 | 7–8 | PMP section 3, M1–M4 with the first E2E test in CI | Release v0.1, mid-term (Week 8) |
-| Sprint 4 | 9–10 | PMP section 4, M5–M8, branch coverage ≥ 40 %, E2E tests for 3 critical flows | Release v0.2, Week 10 |
-| Sprint 5 | 11 | PMP section 5, branch coverage ≥ 60 %, an E2E test for each of M1–M8 | PMP section 5, Week 11 |
-| Sprint 6 | 12–13 | Final report, PMP section 6, presentation and live demo | Release v1.0, final |
+| Sprint 2 | 6–7 | Final SRS and design document, PMP section 3, M1, M2, M3 and M6 | PMP section 3, Week 7 |
+| Sprint 3 | 8 | M4 and the first E2E test in CI | Release v0.1, mid-term (Week 8) |
+| Sprint 4 | 9–10 | PMP section 4, M5, M7 and M8, branch coverage ≥ 40 %, E2E tests for 3 critical flows | Release v0.2, Week 10 |
+| Sprint 5 | 11–12 | PMP sections 5–6, branch coverage ≥ 60 %, an E2E test for each of M1–M8, final report | Release v1.0, Week 12 |
+| Sprint 6 | 13 | Presentation and live demo | Final presentation, Week 13 |
 
 ---
 
