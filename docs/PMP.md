@@ -41,18 +41,18 @@ A web-based, AI-assisted child development platform that enables parents, specia
 
 > One row per Jira epic. Number of tasks = how many tasks you created under that epic.
 
-In Jira each work package is one story (TF383-7 … TF383-14) and its tasks are the subtasks under it. The tasks are the user stories from `docs/SRS.md`.
+In Jira each work package is one epic (TF383-7 … TF383-14) and its tasks are the stories under it. The tasks are the user stories from `docs/SRS.md`.
 
 | Epic | Owner | Number of tasks | Planned sprint(s) |
 |---|---|---|---|
-| M1 – Login and roles (TF383-7) | Mert Akdemir | 2 | Sprint 2 |
-| M2 – Linking specialists (TF383-8) | Mert Akdemir | 3 | Sprint 2 |
-| M3 – Weekly schedule (TF383-9) | Batın Abiş | 2 | Sprint 2 |
-| M4 – Tasks (TF383-10) | Burak Tunahan Mazman | 3 | Sprint 2 |
-| M5 – Specialist entries (TF383-11) | Batın Abiş | 3 | Sprint 3 |
-| M6 – Documents (TF383-12) | Burak Tunahan Mazman | 2 | Sprint 3 |
-| M7 – Weekly statistics (TF383-13) | Batın Abiş | 1 | Sprint 3 |
-| M8 – Role-based AI summary (TF383-14) | Mert Akdemir | 2 | Sprint 3 |
+| M1 – Login and roles (TF383-7) | Mert Akdemir | 2 | Sprint 3 |
+| M2 – Linking specialists (TF383-8) | Mert Akdemir | 3 | Sprint 3 |
+| M3 – Weekly schedule (TF383-9) | Batın Abiş | 2 | Sprint 3 |
+| M4 – Tasks (TF383-10) | Burak Tunahan Mazman | 3 | Sprint 3 |
+| M5 – Specialist entries (TF383-11) | Batın Abiş | 3 | Sprint 4 |
+| M6 – Documents (TF383-12) | Burak Tunahan Mazman | 2 | Sprint 4 |
+| M7 – Weekly statistics (TF383-13) | Batın Abiş | 1 | Sprint 4 |
+| M8 – Role-based AI summary (TF383-14) | Mert Akdemir | 2 | Sprint 4 |
 
 Besides M1–M8 we track the other deliverables the same way: REQ-1 SRS draft (TF383-19), v0.0 walking skeleton (TF383-22), REQ-2 final SRS and design document (TF383-29), v1.0 final release, report and presentation (TF383-32), and PMP-1 … PMP-6 (TF383-1 … TF383-6).
 
@@ -63,9 +63,11 @@ Besides M1–M8 we track the other deliverables the same way: REQ-1 SRS draft (T
 | Sprint | Weeks | Sprint goal | Ends with |
 |---|---|---|---|
 | Sprint 1 | 4–5 | SRS draft, PMP sections 1–2, walking skeleton | Walking skeleton (v0.0), Week 5 |
-| Sprint 2 | 6–8 | Final SRS and design document, PMP section 3, M1–M4 with the first E2E test in CI | Release v0.1, mid-term (Week 8) |
-| Sprint 3 | 9–10 | PMP section 4, M5–M8, branch coverage ≥ 40 %, E2E tests for 3 critical flows | Release v0.2, Week 10 |
-| Sprint 4 | 11–13 | PMP sections 5–6, branch coverage ≥ 60 %, an E2E test for each of M1–M8, final report, presentation and live demo | Release v1.0, final |
+| Sprint 2 | 6 | Final SRS and design document | Final SRS and design document, Week 6 |
+| Sprint 3 | 7–8 | PMP section 3, M1–M4 with the first E2E test in CI | Release v0.1, mid-term (Week 8) |
+| Sprint 4 | 9–10 | PMP section 4, M5–M8, branch coverage ≥ 40 %, E2E tests for 3 critical flows | Release v0.2, Week 10 |
+| Sprint 5 | 11 | PMP section 5, branch coverage ≥ 60 %, an E2E test for each of M1–M8 | PMP section 5, Week 11 |
+| Sprint 6 | 12–13 | Final report, PMP section 6, presentation and live demo | Release v1.0, final |
 
 ---
 
