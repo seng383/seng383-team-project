@@ -11,6 +11,15 @@ function createApp(db) {
     res.json({ status: 'ok', database: 'ok', users: count });
   });
 
+  // No login yet: M1 adds the JWT check and M4 returns only the tasks the user may see.
+  app.get('/api/tasks', (req, res) => {
+    const tasks = db.prepare(
+      'SELECT id, child_id AS childId, title, description, development_area AS developmentArea, ' +
+        'due_date AS dueDate, status FROM tasks ORDER BY id'
+    ).all();
+    res.json(tasks);
+  });
+
   app.use('/api', (req, res) => {
     res.status(404).json({ error: 'Not found' });
   });

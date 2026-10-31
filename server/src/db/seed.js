@@ -22,7 +22,7 @@ function seed(db) {
   );
 
   const run = db.transaction(() => {
-    db.exec('DELETE FROM specialist_links; DELETE FROM children; DELETE FROM users;');
+    db.exec('DELETE FROM tasks; DELETE FROM specialist_links; DELETE FROM children; DELETE FROM users;');
 
     const ids = {};
     for (const u of users) {
@@ -36,6 +36,11 @@ function seed(db) {
     const link = db.prepare('INSERT INTO specialist_links (child_id, specialist_id) VALUES (?, ?)');
     link.run(childId, ids['teacher@demo.test']);
     link.run(childId, ids['psychologist@demo.test']);
+
+    // Sample task for the walking skeleton: the teacher assigned it, its status is 'not_done' by default.
+    db.prepare(
+      'INSERT INTO tasks (child_id, assigned_by, title, description, development_area, due_date) VALUES (?, ?, ?, ?, ?, ?)'
+    ).run(childId, ids['teacher@demo.test'], '20 dakika kitap oku', 'Bir kitabın bir bölümünü oku.', 'language', '2026-11-06');
   });
 
   run();

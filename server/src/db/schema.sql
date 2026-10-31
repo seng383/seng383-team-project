@@ -1,4 +1,4 @@
--- First version of the schema. Tables for M3-M8 are added in their own pull requests.
+-- First version of the schema. The walking skeleton adds the tasks table (M4); the other tables for M3-M8 are added in their own pull requests.
 
 CREATE TABLE IF NOT EXISTS users (
   id              INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,4 +21,18 @@ CREATE TABLE IF NOT EXISTS specialist_links (
   specialist_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   linked_at     TEXT    NOT NULL DEFAULT (datetime('now')),
   PRIMARY KEY (child_id, specialist_id)
+);
+
+-- Tasks a parent or linked specialist assigns to a child (M4)
+CREATE TABLE IF NOT EXISTS tasks (
+  id               INTEGER PRIMARY KEY AUTOINCREMENT,
+  child_id         INTEGER NOT NULL REFERENCES children(user_id) ON DELETE CASCADE,
+  assigned_by      INTEGER NOT NULL REFERENCES users(id),
+  title            TEXT    NOT NULL,
+  description      TEXT,
+  development_area TEXT    NOT NULL CHECK (development_area IN ('language', 'motor_skills', 'social_emotional', 'cognitive', 'self_care')),
+  due_date         TEXT    NOT NULL,
+  status           TEXT    NOT NULL DEFAULT 'not_done' CHECK (status IN ('not_done', 'done')),
+  completed_at     TEXT,
+  created_at       TEXT    NOT NULL DEFAULT (datetime('now'))
 );
