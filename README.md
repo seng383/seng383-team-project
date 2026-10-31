@@ -21,7 +21,7 @@ npm run seed
 npm run dev
 ```
 
-Then open http://localhost:5173. The page should say "Sistem durumu: çalışıyor" and show the number of seeded users. The API runs on http://localhost:3001.
+Then open http://localhost:5173. The page should say "Sistem durumu: çalışıyor", show the number of seeded users and, under "Görevler", the sample task "20 dakika kitap oku" that the seed stored in the database. The API runs on http://localhost:3001.
 
 ### Demo accounts
 
