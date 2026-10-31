@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600" font-family="system-ui, sans-serif" font-size="14">
+  <title>Belgeler (M6) – taslak</title>
+  <rect width="960" height="600" fill="#ffffff"/>
+
+  <!-- Üst çubuk -->
+  <rect width="960" height="56" fill="#f2f2f2"/>
+  <line x1="0" y1="56" x2="960" y2="56" stroke="#999999"/>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="752" y="16" width="80" height="24" rx="12"/>
+    <rect x="848" y="12" width="88" height="32" rx="4"/>
+  </g>
+  <g fill="#333333">
+    <text x="24" y="35" font-size="18" font-weight="bold">Çocuk Gelişim Platformu</text>
+    <text x="740" y="33" text-anchor="end">Ayşe Demir</text>
+    <text x="792" y="33" font-size="13" text-anchor="middle">Ebeveyn</text>
+    <text x="892" y="33" text-anchor="middle">Çıkış yap</text>
+  </g>
+
+  <!-- Çocuk sekmeleri -->
+  <line x1="0" y1="104" x2="960" y2="104" stroke="#999999"/>
+  <line x1="124" y1="68" x2="124" y2="92" stroke="#999999"/>
+  <g fill="#333333">
+    <text x="24" y="86" font-size="16" font-weight="bold">Can Demir</text>
+    <text x="144" y="86">Haftalık program</text>
+    <text x="289" y="86">Görevler</text>
+    <text x="376" y="86">Uzman notları</text>
+    <text x="498" y="86" font-weight="bold">Belgeler</text>
+    <text x="582" y="86">İstatistikler</text>
+    <text x="683" y="86">Haftalık özet</text>
+  </g>
+  <rect x="498" y="101" width="56" height="3" fill="#333333"/>
+
+  <!-- Yükleme alanı -->
+  <rect x="24" y="120" width="912" height="132" rx="8" fill="#f2f2f2" stroke="#999999"/>
+  <rect x="44" y="160" width="104" height="36" rx="4" fill="#ffffff" stroke="#999999"/>
+  <rect x="780" y="160" width="136" height="36" rx="4" fill="#3b6ea5"/>
+  <circle cx="51" cy="234" r="7" fill="#ffffff" stroke="#333333"/>
+  <g fill="#333333">
+    <text x="44" y="148" font-weight="bold">Yeni belge</text>
+    <text x="96" y="183" text-anchor="middle">Dosya seç</text>
+    <text x="164" y="183">video-kaydi.mp4 · 24 MB</text>
+    <text x="44" y="216" font-size="12">PDF, JPEG, PNG · en fazla 10 MB</text>
+    <text x="51" y="238" font-size="11" font-weight="bold" text-anchor="middle">!</text>
+    <text x="64" y="239" font-size="13">Bu dosya yüklenemez: yalnızca PDF, JPEG veya PNG; en fazla 10 MB.</text>
+  </g>
+  <text x="848" y="183" font-weight="bold" text-anchor="middle" fill="#ffffff">Belge yükle</text>
+
+  <!-- Belge listesi -->
+  <rect x="24" y="268" width="912" height="36" fill="#f2f2f2" stroke="#999999"/>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="24" y="304" width="912" height="48"/>
+    <rect x="24" y="352" width="912" height="48"/>
+    <rect x="24" y="400" width="912" height="48"/>
+    <rect x="24" y="448" width="912" height="48"/>
+  </g>
+  <g fill="#f2f2f2" stroke="#999999">
+    <rect x="776" y="314" width="84" height="28" rx="4"/>
+    <rect x="868" y="314" width="52" height="28" rx="4"/>
+    <rect x="776" y="362" width="84" height="28" rx="4"/>
+    <rect x="868" y="362" width="52" height="28" rx="4"/>
+    <rect x="776" y="410" width="84" height="28" rx="4"/>
+    <rect x="868" y="410" width="52" height="28" rx="4"/>
+    <rect x="776" y="458" width="84" height="28" rx="4"/>
+    <rect x="868" y="458" width="52" height="28" rx="4"/>
+  </g>
+  <g fill="#333333" font-size="13" font-weight="bold">
+    <text x="44" y="291">Belge adı</text>
+    <text x="380" y="291">Tür</text>
+    <text x="460" y="291">Yükleyen</text>
+    <text x="620" y="291">Yükleme tarihi</text>
+    <text x="776" y="291">İşlemler</text>
+  </g>
+  <g fill="#333333">
+    <text x="44" y="333">okul-gozlem-formu.pdf</text>
+    <text x="380" y="333">PDF</text>
+    <text x="460" y="333">Elif Kaya</text>
+    <text x="620" y="333">27.10.2026</text>
+    <text x="44" y="381">resim-calismasi.png</text>
+    <text x="380" y="381">PNG</text>
+    <text x="460" y="381">Ayşe Demir</text>
+    <text x="620" y="381">24.10.2026</text>
+    <text x="44" y="429">dil-gelisim-plani.pdf</text>
+    <text x="380" y="429">PDF</text>
+    <text x="460" y="429">Murat Şahin</text>
+    <text x="620" y="429">16.10.2026</text>
+    <text x="44" y="477">sinif-etkinligi.jpeg</text>
+    <text x="380" y="477">JPEG</text>
+    <text x="460" y="477">Elif Kaya</text>
+    <text x="620" y="477">09.10.2026</text>
+  </g>
+  <g fill="#333333" font-size="13" text-anchor="middle">
+    <text x="818" y="333">Görüntüle</text>
+    <text x="894" y="333">İndir</text>
+    <text x="818" y="381">Görüntüle</text>
+    <text x="894" y="381">İndir</text>
+    <text x="818" y="429">Görüntüle</text>
+    <text x="894" y="429">İndir</text>
+    <text x="818" y="477">Görüntüle</text>
+    <text x="894" y="477">İndir</text>
+  </g>
+
+  <!-- Not -->
+  <rect x="24" y="548" width="912" height="32" rx="4" fill="none" stroke="#999999" stroke-dasharray="4 4"/>
+  <text x="40" y="568" font-size="12" font-style="italic" fill="#333333">Not: “Görüntüle” belgeyi tarayıcıda açar, “İndir” özgün adıyla indirir. Çocuk ve bağlı olmayan uzman belgelere erişemez.</text>
+</svg>

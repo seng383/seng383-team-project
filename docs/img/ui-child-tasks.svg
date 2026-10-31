@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600" font-family="system-ui, sans-serif" font-size="14">
+  <title>Çocuğun görev ekranı (M4) – taslak</title>
+  <rect width="960" height="600" fill="#ffffff"/>
+
+  <!-- Üst çubuk -->
+  <rect width="960" height="56" fill="#f2f2f2"/>
+  <line x1="0" y1="56" x2="960" y2="56" stroke="#999999"/>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="752" y="16" width="80" height="24" rx="12"/>
+    <rect x="848" y="12" width="88" height="32" rx="4"/>
+  </g>
+  <g fill="#333333">
+    <text x="24" y="35" font-size="18" font-weight="bold">Çocuk Gelişim Platformu</text>
+    <text x="740" y="33" text-anchor="end">Can Demir</text>
+    <text x="792" y="33" font-size="13" text-anchor="middle">Çocuk</text>
+    <text x="892" y="33" text-anchor="middle">Çıkış yap</text>
+  </g>
+
+  <!-- Çocuğun sekmeleri -->
+  <line x1="0" y1="104" x2="960" y2="104" stroke="#999999"/>
+  <g fill="#333333">
+    <text x="24" y="86" font-weight="bold">Görevlerim</text>
+    <text x="132" y="86">Takvimim</text>
+  </g>
+  <rect x="24" y="101" width="76" height="3" fill="#333333"/>
+
+  <g fill="#333333">
+    <text x="24" y="142" font-size="20" font-weight="bold">Bu haftaki görevlerin</text>
+    <text x="24" y="164" font-size="13">26 Ekim – 1 Kasım 2026</text>
+  </g>
+
+  <!-- Görev satırları -->
+  <g fill="#f2f2f2" stroke="#999999">
+    <rect x="24" y="180" width="912" height="60" rx="6"/>
+    <rect x="24" y="250" width="912" height="60" rx="6"/>
+    <rect x="24" y="320" width="912" height="60" rx="6"/>
+    <rect x="24" y="390" width="912" height="60" rx="6"/>
+    <rect x="24" y="460" width="912" height="60" rx="6"/>
+  </g>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="600" y="198" width="100" height="24" rx="12"/>
+    <rect x="600" y="268" width="100" height="24" rx="12"/>
+    <rect x="600" y="338" width="100" height="24" rx="12"/>
+    <rect x="600" y="408" width="100" height="24" rx="12"/>
+    <rect x="600" y="478" width="100" height="24" rx="12"/>
+  </g>
+  <g fill="none" stroke="#333333" stroke-width="2">
+    <path d="M618 210 L621 213 L627 207"/>
+    <path d="M618 280 L621 283 L627 277"/>
+    <path d="M618 420 L621 423 L627 417"/>
+  </g>
+  <g fill="#3b6ea5">
+    <rect x="716" y="332" width="200" height="36" rx="4"/>
+    <rect x="716" y="472" width="200" height="36" rx="4"/>
+  </g>
+  <g fill="#333333" font-size="16" font-weight="bold">
+    <text x="44" y="206">Hikâyeyi kendi cümlelerinle anlat</text>
+    <text x="44" y="276">Ayakkabı bağcıklarını bağla</text>
+    <text x="44" y="346">Resimli kitaptan 5 sayfa oku</text>
+    <text x="44" y="416">Oyunda sıranı bekle</text>
+    <text x="44" y="486">Makasla çizgi boyunca kes</text>
+  </g>
+  <g fill="#333333" font-size="13">
+    <text x="44" y="226">Dil · Son gün: 28 Ekim Çarşamba</text>
+    <text x="44" y="296">Öz bakım · Son gün: 29 Ekim Perşembe</text>
+    <text x="44" y="366">Dil · Son gün: 30 Ekim Cuma</text>
+    <text x="44" y="436">Sosyal-duygusal · Son gün: 30 Ekim Cuma</text>
+    <text x="44" y="506">Motor beceriler · Son gün: 31 Ekim Cumartesi</text>
+    <text x="633" y="215">Yapıldı</text>
+    <text x="633" y="285">Yapıldı</text>
+    <text x="650" y="355" text-anchor="middle">Yapılmadı</text>
+    <text x="633" y="425">Yapıldı</text>
+    <text x="650" y="495" text-anchor="middle">Yapılmadı</text>
+  </g>
+  <g fill="#ffffff" font-weight="bold" text-anchor="middle">
+    <text x="816" y="355">Yapıldı olarak işaretle</text>
+    <text x="816" y="495">Yapıldı olarak işaretle</text>
+  </g>
+
+  <!-- Not -->
+  <rect x="24" y="548" width="912" height="32" rx="4" fill="none" stroke="#999999" stroke-dasharray="4 4"/>
+  <text x="40" y="568" font-size="12" font-style="italic" fill="#333333">Not: Çocuk yalnızca kendi görevlerini görür ve yalnızca kendi görevini “Yapıldı” olarak işaretleyebilir.</text>
+</svg>

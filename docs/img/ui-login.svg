@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600" font-family="system-ui, sans-serif" font-size="14">
+  <title>Giriş ekranı (M1) – taslak</title>
+  <rect width="960" height="600" fill="#ffffff"/>
+
+  <!-- Üst çubuk -->
+  <rect width="960" height="56" fill="#f2f2f2"/>
+  <line x1="0" y1="56" x2="960" y2="56" stroke="#999999"/>
+  <text x="24" y="35" font-size="18" font-weight="bold" fill="#333333">Çocuk Gelişim Platformu</text>
+  <rect x="752" y="16" width="184" height="24" rx="12" fill="#ffffff" stroke="#999999"/>
+  <text x="844" y="33" font-size="13" text-anchor="middle" fill="#333333">Ebeveyn · Uzman · Çocuk</text>
+
+  <!-- Giriş kartı -->
+  <rect x="300" y="108" width="360" height="376" rx="8" fill="#f2f2f2" stroke="#999999"/>
+  <g fill="#333333">
+    <text x="332" y="154" font-size="22" font-weight="bold">Giriş yap</text>
+    <text x="332" y="178" font-size="13">Kayıtlı e-posta ve şifrenizle giriş yapın.</text>
+    <text x="332" y="214" font-size="13" font-weight="bold">E-posta</text>
+    <text x="332" y="286" font-size="13" font-weight="bold">Şifre</text>
+  </g>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="332" y="222" width="296" height="40" rx="4"/>
+    <rect x="332" y="294" width="296" height="40" rx="4"/>
+    <rect x="332" y="350" width="296" height="40" rx="4"/>
+  </g>
+  <g fill="#333333">
+    <text x="344" y="247">parent@demo.test</text>
+    <text x="344" y="319">••••••••</text>
+  </g>
+
+  <!-- Tek, genel hata mesajı -->
+  <circle cx="352" cy="370" r="9" fill="#ffffff" stroke="#333333"/>
+  <text x="352" y="375" font-size="13" font-weight="bold" text-anchor="middle" fill="#333333">!</text>
+  <text x="370" y="375" fill="#333333">E-posta veya şifre hatalı.</text>
+
+  <!-- Birincil düğme -->
+  <rect x="332" y="410" width="296" height="44" rx="4" fill="#3b6ea5"/>
+  <text x="480" y="437" font-size="15" font-weight="bold" text-anchor="middle" fill="#ffffff">Giriş yap</text>
+
+  <!-- Not -->
+  <rect x="24" y="548" width="912" height="32" rx="4" fill="none" stroke="#999999" stroke-dasharray="4 4"/>
+  <text x="40" y="568" font-size="12" font-style="italic" fill="#333333">Not: Başarılı girişte rolün başlangıç ekranı açılır (Ebeveyn paneli, Çocuklarım veya Görevlerim). Hatalı girişte oturum açılmaz.</text>
+</svg>

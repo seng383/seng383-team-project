@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600" font-family="system-ui, sans-serif" font-size="14">
+  <title>Haftalık program (M3) – taslak</title>
+  <rect width="960" height="600" fill="#ffffff"/>
+
+  <!-- Üst çubuk -->
+  <rect width="960" height="56" fill="#f2f2f2"/>
+  <line x1="0" y1="56" x2="960" y2="56" stroke="#999999"/>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="752" y="16" width="80" height="24" rx="12"/>
+    <rect x="848" y="12" width="88" height="32" rx="4"/>
+  </g>
+  <g fill="#333333">
+    <text x="24" y="35" font-size="18" font-weight="bold">Çocuk Gelişim Platformu</text>
+    <text x="740" y="33" text-anchor="end">Ayşe Demir</text>
+    <text x="792" y="33" font-size="13" text-anchor="middle">Ebeveyn</text>
+    <text x="892" y="33" text-anchor="middle">Çıkış yap</text>
+  </g>
+
+  <!-- Çocuk sekmeleri -->
+  <line x1="0" y1="104" x2="960" y2="104" stroke="#999999"/>
+  <line x1="124" y1="68" x2="124" y2="92" stroke="#999999"/>
+  <g fill="#333333">
+    <text x="24" y="86" font-size="16" font-weight="bold">Can Demir</text>
+    <text x="144" y="86" font-weight="bold">Haftalık program</text>
+    <text x="289" y="86">Görevler</text>
+    <text x="376" y="86">Uzman notları</text>
+    <text x="498" y="86">Belgeler</text>
+    <text x="582" y="86">İstatistikler</text>
+    <text x="683" y="86">Haftalık özet</text>
+  </g>
+  <rect x="144" y="101" width="117" height="3" fill="#333333"/>
+
+  <!-- Hafta seçici -->
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="24" y="120" width="36" height="36" rx="4"/>
+    <rect x="68" y="120" width="232" height="36" rx="4"/>
+    <rect x="308" y="120" width="36" height="36" rx="4"/>
+  </g>
+  <g fill="none" stroke="#333333" stroke-width="2">
+    <path d="M46 130 L38 138 L46 146"/>
+    <path d="M322 130 L330 138 L322 146"/>
+  </g>
+  <text x="184" y="143" font-weight="bold" text-anchor="middle" fill="#333333">26 Ekim – 1 Kasım 2026</text>
+  <rect x="794" y="120" width="140" height="36" rx="4" fill="#3b6ea5"/>
+  <text x="864" y="143" font-weight="bold" text-anchor="middle" fill="#ffffff">Etkinlik ekle</text>
+
+  <!-- Pazartesi–Pazar sütunları -->
+  <g fill="#f2f2f2" stroke="#999999">
+    <rect x="24" y="168" width="130" height="44"/>
+    <rect x="154" y="168" width="130" height="44"/>
+    <rect x="284" y="168" width="130" height="44"/>
+    <rect x="414" y="168" width="130" height="44"/>
+    <rect x="544" y="168" width="130" height="44"/>
+    <rect x="674" y="168" width="130" height="44"/>
+    <rect x="804" y="168" width="130" height="44"/>
+  </g>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="24" y="212" width="130" height="176"/>
+    <rect x="154" y="212" width="130" height="176"/>
+    <rect x="284" y="212" width="130" height="176"/>
+    <rect x="414" y="212" width="130" height="176"/>
+    <rect x="544" y="212" width="130" height="176"/>
+    <rect x="674" y="212" width="130" height="176"/>
+    <rect x="804" y="212" width="130" height="176"/>
+  </g>
+  <g fill="#333333" font-size="13" font-weight="bold">
+    <text x="34" y="186">Pazartesi</text>
+    <text x="164" y="186">Salı</text>
+    <text x="294" y="186">Çarşamba</text>
+    <text x="424" y="186">Perşembe</text>
+    <text x="554" y="186">Cuma</text>
+    <text x="684" y="186">Cumartesi</text>
+    <text x="814" y="186">Pazar</text>
+  </g>
+  <g fill="#333333" font-size="12">
+    <text x="34" y="204">26.10</text>
+    <text x="164" y="204">27.10</text>
+    <text x="294" y="204">28.10</text>
+    <text x="424" y="204">29.10</text>
+    <text x="554" y="204">30.10</text>
+    <text x="684" y="204">31.10</text>
+    <text x="814" y="204">01.11</text>
+  </g>
+
+  <!-- Etkinlikler (gün ve saate göre) -->
+  <g fill="#f2f2f2" stroke="#999999">
+    <rect x="30" y="220" width="118" height="50" rx="4"/>
+    <rect x="290" y="220" width="118" height="50" rx="4"/>
+    <rect x="420" y="220" width="118" height="50" rx="4"/>
+    <rect x="550" y="220" width="118" height="50" rx="4"/>
+    <rect x="550" y="278" width="118" height="50" rx="4"/>
+    <rect x="680" y="220" width="118" height="50" rx="4"/>
+  </g>
+  <g fill="#333333" font-size="12" font-weight="bold">
+    <text x="38" y="240">09:30–10:15</text>
+    <text x="298" y="240">16:00–17:00</text>
+    <text x="428" y="240">14:00–14:45</text>
+    <text x="558" y="240">10:00–12:00</text>
+    <text x="558" y="298">15:30–16:30</text>
+    <text x="688" y="240">11:00–12:00</text>
+  </g>
+  <g fill="#333333" font-size="13">
+    <text x="38" y="258">Dil terapisi</text>
+    <text x="298" y="258">Yüzme</text>
+    <text x="428" y="258">Psikolog seansı</text>
+    <text x="558" y="258">Okul gezisi</text>
+    <text x="558" y="316">Resim kursu</text>
+    <text x="688" y="258">Parkta oyun</text>
+  </g>
+
+  <!-- Etkinlik ekle formu -->
+  <rect x="24" y="404" width="910" height="116" rx="6" fill="#f2f2f2" stroke="#999999"/>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="40" y="456" width="240" height="34" rx="4"/>
+    <rect x="296" y="456" width="124" height="34" rx="4"/>
+    <rect x="436" y="456" width="94" height="34" rx="4"/>
+    <rect x="546" y="456" width="94" height="34" rx="4" stroke="#333333" stroke-width="2"/>
+    <rect x="724" y="456" width="88" height="34" rx="4"/>
+  </g>
+  <rect x="824" y="456" width="94" height="34" rx="4" fill="#3b6ea5"/>
+  <circle cx="47" cy="505" r="7" fill="#ffffff" stroke="#333333"/>
+  <g fill="#333333">
+    <text x="40" y="428" font-weight="bold">Yeni etkinlik</text>
+    <text x="40" y="450" font-size="12">Başlık</text>
+    <text x="296" y="450" font-size="12">Tarih</text>
+    <text x="436" y="450" font-size="12">Başlangıç</text>
+    <text x="546" y="450" font-size="12">Bitiş</text>
+    <text x="52" y="478">Kütüphane ziyareti</text>
+    <text x="308" y="478">27.10.2026</text>
+    <text x="448" y="478">15:00</text>
+    <text x="558" y="478">14:30</text>
+    <text x="768" y="478" text-anchor="middle">Vazgeç</text>
+    <text x="47" y="509" font-size="11" font-weight="bold" text-anchor="middle">!</text>
+    <text x="60" y="510" font-size="13">Bitiş saati başlangıç saatinden önce olamaz.</text>
+  </g>
+  <text x="871" y="478" font-weight="bold" text-anchor="middle" fill="#ffffff">Kaydet</text>
+
+  <!-- Not -->
+  <rect x="24" y="548" width="910" height="32" rx="4" fill="none" stroke="#999999" stroke-dasharray="4 4"/>
+  <text x="40" y="568" font-size="12" font-style="italic" fill="#333333">Not: Etkinlikler gün ve saate göre sıralanır. Çocuk yalnızca kendi etkinliklerini görür; onun ekranında “Etkinlik ekle” yoktur.</text>
+</svg>
