@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600" font-family="system-ui, sans-serif" font-size="14">
+  <title>Ebeveyn paneli (M1, M2) – taslak</title>
+  <rect width="960" height="600" fill="#ffffff"/>
+
+  <!-- Üst çubuk -->
+  <rect width="960" height="56" fill="#f2f2f2"/>
+  <line x1="0" y1="56" x2="960" y2="56" stroke="#999999"/>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="752" y="16" width="80" height="24" rx="12"/>
+    <rect x="848" y="12" width="88" height="32" rx="4"/>
+  </g>
+  <g fill="#333333">
+    <text x="24" y="35" font-size="18" font-weight="bold">Çocuk Gelişim Platformu</text>
+    <text x="740" y="33" text-anchor="end">Ayşe Demir</text>
+    <text x="792" y="33" font-size="13" text-anchor="middle">Ebeveyn</text>
+    <text x="892" y="33" text-anchor="middle">Çıkış yap</text>
+  </g>
+
+  <text x="24" y="96" font-size="20" font-weight="bold" fill="#333333">Ebeveyn paneli</text>
+
+  <!-- Çocuk kartı -->
+  <rect x="24" y="116" width="912" height="128" rx="8" fill="#f2f2f2" stroke="#999999"/>
+  <circle cx="68" cy="160" r="24" fill="#ffffff" stroke="#999999"/>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="44" y="196" width="137" height="36" rx="4"/>
+    <rect x="191" y="196" width="137" height="36" rx="4"/>
+    <rect x="338" y="196" width="137" height="36" rx="4"/>
+    <rect x="485" y="196" width="137" height="36" rx="4"/>
+    <rect x="632" y="196" width="137" height="36" rx="4"/>
+    <rect x="779" y="196" width="137" height="36" rx="4"/>
+  </g>
+  <g fill="#333333">
+    <text x="68" y="165" font-weight="bold" text-anchor="middle">CD</text>
+    <text x="104" y="156" font-size="18" font-weight="bold">Can Demir</text>
+    <text x="104" y="178" font-size="13">Bu hafta 5 görevden 3'ü tamamlandı · 6 etkinlik</text>
+  </g>
+  <g fill="#333333" font-size="13" text-anchor="middle">
+    <text x="112.5" y="219">Haftalık program</text>
+    <text x="259.5" y="219">Görevler</text>
+    <text x="406.5" y="219">Uzman notları</text>
+    <text x="553.5" y="219">Belgeler</text>
+    <text x="700.5" y="219">İstatistikler</text>
+    <text x="847.5" y="219">Haftalık özet</text>
+  </g>
+
+  <!-- Bağlı uzmanlar -->
+  <rect x="24" y="264" width="544" height="236" rx="8" fill="#f2f2f2" stroke="#999999"/>
+  <text x="44" y="292" font-size="16" font-weight="bold" fill="#333333">Bağlı uzmanlar</text>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="44" y="308" width="504" height="60" rx="4"/>
+    <rect x="388" y="322" width="144" height="32" rx="4"/>
+    <rect x="44" y="380" width="504" height="104" rx="4"/>
+  </g>
+  <g fill="#333333">
+    <text x="60" y="332" font-weight="bold">Elif Kaya</text>
+    <text x="60" y="352" font-size="13">Öğretmen</text>
+    <text x="460" y="343" font-size="13" text-anchor="middle">Bağlantıyı kaldır</text>
+    <text x="60" y="402" font-weight="bold">Murat Şahin</text>
+    <text x="60" y="420" font-size="13">Psikolog</text>
+  </g>
+  <!-- Bağlantı kaldırma onayı -->
+  <rect x="56" y="430" width="480" height="44" rx="4" fill="#f2f2f2" stroke="#999999"/>
+  <rect x="344" y="438" width="72" height="28" rx="4" fill="#ffffff" stroke="#999999"/>
+  <rect x="424" y="438" width="104" height="28" rx="4" fill="#3b6ea5"/>
+  <g fill="#333333">
+    <text x="68" y="448" font-size="13" font-weight="bold">Bağlantı kaldırılsın mı?</text>
+    <text x="68" y="466" font-size="12">Uzman artık kayıtları göremez.</text>
+    <text x="380" y="457" font-size="13" text-anchor="middle">Vazgeç</text>
+  </g>
+  <text x="476" y="457" font-size="13" font-weight="bold" text-anchor="middle" fill="#ffffff">Evet, kaldır</text>
+
+  <!-- Uzman ekle -->
+  <rect x="592" y="264" width="344" height="236" rx="8" fill="#f2f2f2" stroke="#999999"/>
+  <rect x="612" y="356" width="304" height="40" rx="4" fill="#ffffff" stroke="#999999"/>
+  <circle cx="620" cy="413" r="8" fill="#ffffff" stroke="#333333"/>
+  <g fill="#333333">
+    <text x="612" y="292" font-size="16" font-weight="bold">Uzman ekle</text>
+    <text x="612" y="316" font-size="13">Kayıtlı bir uzmanı e-postasıyla bağlayın.</text>
+    <text x="612" y="348" font-size="13" font-weight="bold">Uzmanın e-posta adresi</text>
+    <text x="624" y="381">uzman@ornek.test</text>
+    <text x="620" y="417" font-size="12" font-weight="bold" text-anchor="middle">!</text>
+    <text x="634" y="418" font-size="13">Bu e-posta kayıtlı bir uzmana ait değil.</text>
+  </g>
+  <rect x="612" y="436" width="304" height="40" rx="4" fill="#3b6ea5"/>
+  <text x="764" y="461" font-weight="bold" text-anchor="middle" fill="#ffffff">Uzman ekle</text>
+
+  <!-- Not -->
+  <rect x="24" y="548" width="912" height="32" rx="4" fill="none" stroke="#999999" stroke-dasharray="4 4"/>
+  <text x="40" y="568" font-size="12" font-style="italic" fill="#333333">Not: Aynı uzman ikinci kez bağlanmaz. Bağlantısı kaldırılan uzmanın bu çocukla ilgili tüm istekleri reddedilir (403).</text>
+</svg>
