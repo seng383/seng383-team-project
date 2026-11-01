@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600" font-family="system-ui, sans-serif" font-size="14">
+  <title>Yapay zekâ haftalık özeti (M8) – taslak</title>
+  <rect width="960" height="600" fill="#ffffff"/>
+
+  <!-- Üst çubuk -->
+  <rect width="960" height="56" fill="#f2f2f2"/>
+  <line x1="0" y1="56" x2="960" y2="56" stroke="#999999"/>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="752" y="16" width="80" height="24" rx="12"/>
+    <rect x="848" y="12" width="88" height="32" rx="4"/>
+  </g>
+  <g fill="#333333">
+    <text x="24" y="35" font-size="18" font-weight="bold">Çocuk Gelişim Platformu</text>
+    <text x="740" y="33" text-anchor="end">Ayşe Demir</text>
+    <text x="792" y="33" font-size="13" text-anchor="middle">Ebeveyn</text>
+    <text x="892" y="33" text-anchor="middle">Çıkış yap</text>
+  </g>
+
+  <!-- Çocuk sekmeleri -->
+  <line x1="0" y1="104" x2="960" y2="104" stroke="#999999"/>
+  <line x1="124" y1="68" x2="124" y2="92" stroke="#999999"/>
+  <g fill="#333333">
+    <text x="24" y="86" font-size="16" font-weight="bold">Can Demir</text>
+    <text x="144" y="86">Haftalık program</text>
+    <text x="289" y="86">Görevler</text>
+    <text x="376" y="86">Uzman notları</text>
+    <text x="498" y="86">Belgeler</text>
+    <text x="582" y="86">İstatistikler</text>
+    <text x="683" y="86" font-weight="bold">Haftalık özet</text>
+  </g>
+  <rect x="683" y="101" width="86" height="3" fill="#333333"/>
+
+  <!-- Hafta seçici -->
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="24" y="120" width="36" height="36" rx="4"/>
+    <rect x="68" y="120" width="232" height="36" rx="4"/>
+    <rect x="308" y="120" width="36" height="36" rx="4"/>
+  </g>
+  <g fill="none" stroke="#333333" stroke-width="2">
+    <path d="M46 130 L38 138 L46 146"/>
+    <path d="M322 130 L330 138 L322 146"/>
+  </g>
+  <text x="184" y="143" font-weight="bold" text-anchor="middle" fill="#333333">26 Ekim – 1 Kasım 2026</text>
+
+  <!-- Özet kartı -->
+  <rect x="24" y="172" width="600" height="256" rx="8" fill="#f2f2f2" stroke="#999999"/>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="388" y="186" width="216" height="24" rx="12"/>
+    <rect x="44" y="304" width="560" height="36" rx="4"/>
+    <rect x="336" y="376" width="96" height="32" rx="4"/>
+  </g>
+  <rect x="220" y="376" width="104" height="32" rx="4" fill="#ffffff" stroke="#333333" stroke-width="2"/>
+  <circle cx="62" cy="322" r="8" fill="#ffffff" stroke="#333333"/>
+  <path d="M234 392 L238 396 L246 388" fill="none" stroke="#333333" stroke-width="2"/>
+  <g fill="#333333">
+    <text x="44" y="202" font-size="16" font-weight="bold">Bu haftanın özeti</text>
+    <text x="496" y="202" font-size="12" text-anchor="middle">Yapay zekâ tarafından üretildi</text>
+    <text x="44" y="240">Can bu hafta 5 görevden 3'ünü tamamladı; takviminde 6 etkinlik vardı.</text>
+    <text x="44" y="262">Kitap okuma ve makasla kesme görevleri henüz bitmedi. Öğretmeni,</text>
+    <text x="44" y="284">okuma çalışmalarına düzenli katıldığını yazdı.</text>
+    <text x="62" y="326" font-size="12" font-weight="bold" text-anchor="middle">i</text>
+    <text x="78" y="327" font-size="13" font-weight="bold">Bu bir yapay zekâ önerisidir; karar size aittir.</text>
+    <text x="44" y="397" font-size="13">Bu özet işinize yaradı mı?</text>
+    <text x="254" y="397" font-weight="bold">Faydalı</text>
+    <text x="384" y="397" text-anchor="middle">Hatalı</text>
+    <text x="444" y="397" font-size="12">Seçiminiz kaydedildi.</text>
+  </g>
+
+  <!-- Dayandığı kayıtlar -->
+  <rect x="648" y="172" width="288" height="256" rx="8" fill="#f2f2f2" stroke="#999999"/>
+  <g fill="#333333">
+    <text x="668" y="200" font-weight="bold">Dayandığı kayıtlar</text>
+    <g font-size="12">
+      <text x="668" y="226">Görev · 30.10.2026</text>
+      <text x="668" y="270">Görev · 31.10.2026</text>
+      <text x="668" y="314">Etkinlik · 30.10.2026</text>
+      <text x="668" y="358">Uzman notu · 30.10.2026</text>
+    </g>
+    <g font-size="13" text-decoration="underline">
+      <text x="668" y="244">Resimli kitaptan 5 sayfa oku</text>
+      <text x="668" y="288">Makasla çizgi boyunca kes</text>
+      <text x="668" y="332">Okul gezisi</text>
+      <text x="668" y="376">Elif Kaya (Öğretmen)</text>
+      <text x="668" y="408" font-weight="bold">Tüm kayıtları göster (13)</text>
+    </g>
+  </g>
+
+  <!-- Diğer durumlar -->
+  <g fill="none" stroke="#999999" stroke-dasharray="4 4">
+    <rect x="24" y="444" width="448" height="60" rx="6"/>
+    <rect x="488" y="444" width="448" height="60" rx="6"/>
+  </g>
+  <g fill="#333333">
+    <g font-size="12" font-style="italic">
+      <text x="40" y="466">Kayıt olmayan hafta:</text>
+      <text x="504" y="466">Yapay zekâ servisine ulaşılamazsa:</text>
+    </g>
+    <g font-size="13">
+      <text x="40" y="490">Bu hafta özetlenecek kayıt yok.</text>
+      <text x="504" y="490">Özet şu an oluşturulamadı; lütfen daha sonra tekrar deneyin.</text>
+    </g>
+  </g>
+
+  <!-- Not -->
+  <rect x="24" y="548" width="912" height="32" rx="4" fill="none" stroke="#999999" stroke-dasharray="4 4"/>
+  <text x="40" y="568" font-size="12" font-style="italic" fill="#333333">Not: Özet yalnızca okuyucunun görebildiği haftalık kayıtlardan üretilir; uzman kendi diliyle yazılmış ayrı bir özet görür.</text>
+</svg>
