@@ -1,0 +1,23 @@
+{
+  "name": "seng383-team-project",
+  "private": true,
+  "description": "AI-assisted child development platform (SENG 383 term project, team 383-G9)",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,green \"npm run dev -w server\" \"npm run dev -w client\"",
+    "seed": "npm run seed -w server",
+    "test": "npm test -w server && npm test -w client",
+    "test:e2e": "playwright test",
+    "build": "npm run build -w client"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "concurrently": "^10.0.6"
+  }
+}
