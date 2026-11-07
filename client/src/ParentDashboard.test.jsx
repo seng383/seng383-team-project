@@ -1,0 +1,159 @@
+import { fireEvent, render, screen, within } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { describe, expect, test } from 'vitest';
+import { setToken } from './api.js';
+import { AuthProvider } from './AuthContext.jsx';
+import ParentDashboard from './ParentDashboard.jsx';
+import ProtectedRoute from './ProtectedRoute.jsx';
+import { mockApi } from './testUtils.js';
+
+const LINKS = '/api/children/2/specialists';
+const can = { id: 2, name: 'Can Demir' };
+const elif = { id: 3, name: 'Elif Kaya', specialistType: 'teacher', linkedAt: '2026-10-12 09:00:00' };
+const murat = { id: 4, name: 'Murat Şahin', specialistType: 'psychologist', linkedAt: '2026-10-12 09:00:00' };
+const zeynep = { id: 5, name: 'Zeynep Arslan', specialistType: 'coach', linkedAt: '2026-10-13 09:00:00' };
+
+function renderDashboard(routes) {
+  setToken('abc');
+  const fetchMock = mockApi({
+    'GET /api/auth/me': { body: { id: 1, name: 'Ayşe Demir', role: 'parent' } },
+    'GET /api/children': { body: [can] },
+    [`GET ${LINKS}`]: { body: [elif, murat] },
+    ...routes,
+  });
+  render(
+    <MemoryRouter>
+      <AuthProvider>
+        <ProtectedRoute role="parent">
+          <ParentDashboard />
+        </ProtectedRoute>
+      </AuthProvider>
+    </MemoryRouter>
+  );
+  return fetchMock;
+}
+
+async function submitEmail(email) {
+  fireEvent.change(await screen.findByLabelText('Uzmanın e-posta adresi'), { target: { value: email } });
+  fireEvent.click(screen.getByRole('button', { name: 'Uzman ekle' }));
+}
+
+describe('ParentDashboard', () => {
+  test('shows the child and the linked specialists with their type in Turkish', async () => {
+    renderDashboard();
+
+    expect(await screen.findByRole('heading', { name: 'Can Demir' })).toBeInTheDocument();
+    const rows = await screen.findAllByTestId('specialist');
+    expect(rows).toHaveLength(2);
+    expect(rows[0]).toHaveTextContent('Elif Kaya');
+    expect(rows[0]).toHaveTextContent('Öğretmen');
+    expect(rows[1]).toHaveTextContent('Murat Şahin');
+    expect(rows[1]).toHaveTextContent('Psikolog');
+  });
+
+  test('shows a block for each child', async () => {
+    renderDashboard({
+      'GET /api/children': { body: [can, { id: 9, name: 'Ali Demir' }] },
+      'GET /api/children/9/specialists': { body: [] },
+    });
+
+    expect(await screen.findByRole('heading', { name: 'Ali Demir' })).toBeInTheDocument();
+    expect(await screen.findByText('Henüz bağlı uzman yok.')).toBeInTheDocument();
+    expect(await screen.findAllByTestId('specialist')).toHaveLength(2);
+  });
+
+  test('says so when the parent has no child', async () => {
+    renderDashboard({ 'GET /api/children': { body: [] } });
+
+    expect(await screen.findByText('Henüz kayıtlı çocuğunuz yok.')).toBeInTheDocument();
+  });
+
+  test('says so when no specialist is linked', async () => {
+    renderDashboard({ [`GET ${LINKS}`]: { body: [] } });
+
+    expect(await screen.findByText('Henüz bağlı uzman yok.')).toBeInTheDocument();
+  });
+
+  test('shows an error when the children cannot be loaded', async () => {
+    renderDashboard({ 'GET /api/children': { status: 500 } });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Çocuk bilgileri yüklenemedi.');
+  });
+
+  test('shows an error when the specialists cannot be loaded', async () => {
+    renderDashboard({ [`GET ${LINKS}`]: { status: 500 } });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Bağlı uzmanlar yüklenemedi.');
+    expect(screen.queryByLabelText('Uzmanın e-posta adresi')).not.toBeInTheDocument();
+  });
+
+  describe('link form', () => {
+    test('sends the email and adds the specialist to the list (FR-M2-01)', async () => {
+      const fetchMock = renderDashboard({ [`POST ${LINKS}`]: { status: 201, body: zeynep } });
+
+      await submitEmail('coach@demo.test');
+
+      expect(await screen.findByText('Zeynep Arslan')).toBeInTheDocument();
+      expect(await screen.findByRole('status')).toHaveTextContent('Uzman bağlandı.');
+      expect(screen.getAllByTestId('specialist')[2]).toHaveTextContent('Koç');
+      const post = fetchMock.mock.calls.find(([url, options]) => url === LINKS && options.method === 'POST');
+      expect(JSON.parse(post[1].body)).toEqual({ email: 'coach@demo.test' });
+      expect(screen.getByLabelText('Uzmanın e-posta adresi')).toHaveValue('');
+    });
+
+    test('shows the error of the mockup for an email that is not a specialist (FR-M2-02)', async () => {
+      renderDashboard({ [`POST ${LINKS}`]: { status: 400 } });
+
+      await submitEmail('nobody@demo.test');
+
+      expect(await screen.findByRole('alert')).toHaveTextContent('Bu e-posta kayıtlı bir uzmana ait değil.');
+      expect(screen.getAllByTestId('specialist')).toHaveLength(2);
+      expect(screen.getByLabelText('Uzmanın e-posta adresi')).toHaveValue('nobody@demo.test');
+    });
+
+    test('says the specialist is already linked, as a notice and without a second row (FR-M2-03)', async () => {
+      renderDashboard({ [`POST ${LINKS}`]: { status: 200, body: elif } });
+
+      await submitEmail('teacher@demo.test');
+
+      expect(await screen.findByRole('status')).toHaveTextContent('Bu uzman zaten bağlı.');
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(screen.getAllByTestId('specialist')).toHaveLength(2);
+    });
+
+    test('shows a Turkish error when the server fails', async () => {
+      renderDashboard({ [`POST ${LINKS}`]: { status: 500 } });
+
+      await submitEmail('coach@demo.test');
+
+      expect(await screen.findByRole('alert')).toHaveTextContent('Uzman eklenemedi. Lütfen tekrar deneyin.');
+    });
+
+    test('a new attempt clears the old error', async () => {
+      renderDashboard({ [`POST ${LINKS}`]: { status: 400 } });
+      await submitEmail('nobody@demo.test');
+      await screen.findByRole('alert');
+
+      mockApi({ [`POST ${LINKS}`]: { status: 201, body: zeynep } });
+      await submitEmail('coach@demo.test');
+
+      expect(await screen.findByRole('status')).toHaveTextContent('Uzman bağlandı.');
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    test('links to the child of the form it was sent from', async () => {
+      const fetchMock = renderDashboard({
+        'GET /api/children': { body: [can, { id: 9, name: 'Ali Demir' }] },
+        'GET /api/children/9/specialists': { body: [] },
+        'POST /api/children/9/specialists': { status: 201, body: zeynep },
+      });
+      const ali = (await screen.findByRole('heading', { name: 'Ali Demir' })).closest('section');
+
+      fireEvent.change(await within(ali).findByLabelText('Uzmanın e-posta adresi'), { target: { value: 'coach@demo.test' } });
+      fireEvent.click(within(ali).getByRole('button', { name: 'Uzman ekle' }));
+
+      expect(await within(ali).findByText('Zeynep Arslan')).toBeInTheDocument();
+      expect(fetchMock.mock.calls.some(([url, options]) => url === '/api/children/9/specialists' && options.method === 'POST')).toBe(true);
+    });
+  });
+});

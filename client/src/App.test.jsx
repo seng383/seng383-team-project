@@ -23,7 +23,12 @@ function open(path) {
 
 function logInAs(role, routes = {}) {
   setToken('abc');
-  return mockApi({ 'GET /api/auth/me': { body: users[role] }, 'GET /api/tasks': { body: tasks }, ...routes });
+  return mockApi({
+    'GET /api/auth/me': { body: users[role] },
+    'GET /api/tasks': { body: tasks },
+    'GET /api/children': { body: [] },
+    ...routes,
+  });
 }
 
 describe('App', () => {
@@ -47,6 +52,7 @@ describe('App', () => {
       mockApi({
         'GET /api/health': health,
         'GET /api/tasks': { body: tasks },
+        'GET /api/children': { body: [] },
         'POST /api/auth/login': { body: { token: 'abc', user: users[role] } },
       });
       open('/login');
