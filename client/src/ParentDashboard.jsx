@@ -14,6 +14,7 @@ const SPECIALIST_TYPES = {
 const panelStyle = { flex: '1 1 280px', padding: 16, background: '#f2f2f2', border: '1px solid #999999', borderRadius: 8 };
 const rowStyle = { padding: 12, marginBottom: 8, background: '#ffffff', border: '1px solid #999999', borderRadius: 4 };
 const primaryButtonStyle = { padding: 8, color: '#ffffff', background: '#3b6ea5', border: 'none', borderRadius: 4, fontWeight: 'bold' };
+const confirmStyle = { padding: 8, marginTop: 8, background: '#f2f2f2', border: '1px solid #999999', borderRadius: 4, fontSize: 13 };
 const errorStyle = { color: '#b3261e' };
 
 function ChildCard({ child }) {
@@ -23,6 +24,8 @@ function ChildCard({ child }) {
   const [linkNotice, setLinkNotice] = useState(null);
   const [linkError, setLinkError] = useState(null);
   const [linking, setLinking] = useState(false);
+  const [confirmingId, setConfirmingId] = useState(null);
+  const [unlinkError, setUnlinkError] = useState(null);
 
   useEffect(() => {
     api(`/api/children/${child.id}/specialists`)
@@ -51,6 +54,23 @@ function ChildCard({ child }) {
     setLinking(false);
   }
 
+  function askToUnlink(specialistId) {
+    setUnlinkError(null);
+    setConfirmingId(specialistId);
+  }
+
+  async function handleUnlink(specialistId) {
+    setLinkNotice(null);
+    setUnlinkError(null);
+    try {
+      await api(`/api/children/${child.id}/specialists/${specialistId}`, { method: 'DELETE' });
+      setSpecialists((list) => list.filter((specialist) => specialist.id !== specialistId));
+      setConfirmingId(null);
+    } catch {
+      setUnlinkError('Bağlantı kaldırılamadı. Lütfen tekrar deneyin.');
+    }
+  }
+
   return (
     <section style={{ marginBottom: 32 }}>
       <h2 style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 18 }}>
@@ -71,8 +91,36 @@ function ChildCard({ child }) {
             {specialists.length === 0 && <p>Henüz bağlı uzman yok.</p>}
             {specialists.map((specialist) => (
               <div key={specialist.id} data-testid="specialist" style={rowStyle}>
-                <strong>{specialist.name}</strong>
-                <div style={{ fontSize: 13 }}>{SPECIALIST_TYPES[specialist.specialistType]}</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                  <div>
+                    <strong>{specialist.name}</strong>
+                    <div style={{ fontSize: 13 }}>{SPECIALIST_TYPES[specialist.specialistType]}</div>
+                  </div>
+                  {confirmingId !== specialist.id && (
+                    <button type="button" onClick={() => askToUnlink(specialist.id)}>
+                      Bağlantıyı kaldır
+                    </button>
+                  )}
+                </div>
+                {confirmingId === specialist.id && (
+                  <div style={confirmStyle}>
+                    <strong>Bağlantı kaldırılsın mı?</strong>
+                    <div>Uzman artık kayıtları göremez.</div>
+                    {unlinkError && (
+                      <p role="alert" style={errorStyle}>
+                        {unlinkError}
+                      </p>
+                    )}
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 8 }}>
+                      <button type="button" onClick={() => setConfirmingId(null)}>
+                        Vazgeç
+                      </button>
+                      <button type="button" onClick={() => handleUnlink(specialist.id)} style={primaryButtonStyle}>
+                        Evet, kaldır
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

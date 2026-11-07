@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, test } from 'vitest';
 import { setToken } from './api.js';
@@ -154,6 +154,94 @@ describe('ParentDashboard', () => {
 
       expect(await within(ali).findByText('Zeynep Arslan')).toBeInTheDocument();
       expect(fetchMock.mock.calls.some(([url, options]) => url === '/api/children/9/specialists' && options.method === 'POST')).toBe(true);
+    });
+  });
+
+  describe('unlink (FR-M2-04)', () => {
+    const ELIF_LINK = `${LINKS}/3`;
+
+    function deleteRequests(fetchMock) {
+      return fetchMock.mock.calls.filter(([, options]) => options.method === 'DELETE');
+    }
+
+    async function openConfirmation(rowIndex = 0) {
+      const rows = await screen.findAllByTestId('specialist');
+      fireEvent.click(within(rows[rowIndex]).getByRole('button', { name: 'Bağlantıyı kaldır' }));
+      return rows[rowIndex];
+    }
+
+    test('asks first and sends nothing until the parent confirms', async () => {
+      const fetchMock = renderDashboard({ [`DELETE ${ELIF_LINK}`]: { status: 204 } });
+
+      const row = await openConfirmation();
+
+      expect(within(row).getByText('Bağlantı kaldırılsın mı?')).toBeInTheDocument();
+      expect(within(row).getByText('Uzman artık kayıtları göremez.')).toBeInTheDocument();
+      expect(deleteRequests(fetchMock)).toHaveLength(0);
+      expect(screen.getAllByTestId('specialist')).toHaveLength(2);
+    });
+
+    test('asks only about the chosen specialist', async () => {
+      renderDashboard();
+
+      await openConfirmation(1);
+
+      const rows = screen.getAllByTestId('specialist');
+      expect(within(rows[1]).getByRole('button', { name: 'Evet, kaldır' })).toBeInTheDocument();
+      expect(within(rows[0]).queryByRole('button', { name: 'Evet, kaldır' })).not.toBeInTheDocument();
+    });
+
+    test('cancelling keeps the specialist and sends nothing', async () => {
+      const fetchMock = renderDashboard({ [`DELETE ${ELIF_LINK}`]: { status: 204 } });
+      const row = await openConfirmation();
+
+      fireEvent.click(within(row).getByRole('button', { name: 'Vazgeç' }));
+
+      expect(screen.queryByText('Bağlantı kaldırılsın mı?')).not.toBeInTheDocument();
+      expect(deleteRequests(fetchMock)).toHaveLength(0);
+      expect(screen.getAllByTestId('specialist')).toHaveLength(2);
+    });
+
+    test('confirming removes the link and the specialist from the list', async () => {
+      const fetchMock = renderDashboard({ [`DELETE ${ELIF_LINK}`]: { status: 204 } });
+      const row = await openConfirmation();
+
+      fireEvent.click(within(row).getByRole('button', { name: 'Evet, kaldır' }));
+
+      await waitFor(() => expect(screen.getAllByTestId('specialist')).toHaveLength(1));
+      expect(screen.getByTestId('specialist')).toHaveTextContent('Murat Şahin');
+      expect(deleteRequests(fetchMock).map(([url]) => url)).toEqual([ELIF_LINK]);
+    });
+
+    test('shows the empty message after the last specialist is removed', async () => {
+      renderDashboard({ [`GET ${LINKS}`]: { body: [elif] }, [`DELETE ${ELIF_LINK}`]: { status: 204 } });
+      const row = await openConfirmation();
+
+      fireEvent.click(within(row).getByRole('button', { name: 'Evet, kaldır' }));
+
+      expect(await screen.findByText('Henüz bağlı uzman yok.')).toBeInTheDocument();
+    });
+
+    test('keeps the specialist and shows a Turkish error when the API fails', async () => {
+      renderDashboard({ [`DELETE ${ELIF_LINK}`]: { status: 500 } });
+      const row = await openConfirmation();
+
+      fireEvent.click(within(row).getByRole('button', { name: 'Evet, kaldır' }));
+
+      expect(await screen.findByRole('alert')).toHaveTextContent('Bağlantı kaldırılamadı. Lütfen tekrar deneyin.');
+      expect(screen.getAllByTestId('specialist')).toHaveLength(2);
+    });
+
+    test('a specialist can be linked again after an unlink', async () => {
+      renderDashboard({ [`DELETE ${ELIF_LINK}`]: { status: 204 }, [`POST ${LINKS}`]: { status: 201, body: elif } });
+      const row = await openConfirmation();
+      fireEvent.click(within(row).getByRole('button', { name: 'Evet, kaldır' }));
+      await waitFor(() => expect(screen.getAllByTestId('specialist')).toHaveLength(1));
+
+      await submitEmail('teacher@demo.test');
+
+      expect(await screen.findByRole('status')).toHaveTextContent('Uzman bağlandı.');
+      expect(screen.getAllByTestId('specialist')).toHaveLength(2);
     });
   });
 });
