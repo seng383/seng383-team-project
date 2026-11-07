@@ -2,13 +2,13 @@
 
 **Team name:** 383-G9  
 **Version:** ☒ First version (Week 6) ☐ Final (Week 10)  
-**Last updated:** 2026-10-31
+**Last updated:** 2026-11-07
 
 ---
 
 ## 1. Architecture Overview
 
-The platform is a client–server web application with three layers: a React single-page application in the browser, an Express REST API on Node.js and a SQLite database file. React talks only to the API (HTTP requests with JSON and the user's JWT), and the API checks identity, permission and data on every request before it reads or writes the database. One backend AI module is the only part that calls the external AI provider, GitHub Models; in mock mode it returns a fixed text without a network call, so the application and its tests also work without the AI.
+The platform is a client–server web application with three layers: a React single-page application in the browser, an Express REST API on Node.js and a SQLite database file. React talks only to the API (HTTP requests with JSON and the user's JWT), and the API checks identity, permission and data on every request before it reads or writes the database. One backend AI module is the only part that calls the external AI provider, the Gemini API; in mock mode it returns a fixed text without a network call, so the application and its tests also work without the AI.
 
 ```mermaid
 flowchart LR
@@ -20,7 +20,7 @@ flowchart LR
     SPA -->|"HTTP requests with JSON and JWT"| API
     API --> AI
     API -->|"better-sqlite3"| DB[("SQLite database file")]
-    AI -->|"live mode only"| Provider["GitHub Models (external AI provider)"]
+    AI -->|"live mode only"| Provider["Gemini API (external AI provider)"]
 ```
 
 ### Technology Stack
@@ -32,7 +32,7 @@ flowchart LR
 | Database | SQLite file through `better-sqlite3` ^13.0.3; schema in `server/src/db/schema.sql`, synthetic demo data from `npm run seed` |
 | Testing | Jest ^30.5.2 and Supertest ^7.3.1 (backend), Vitest ^5.0.5 with `@testing-library/react` ^16.3.3 and jsdom ^30.1.3 (frontend), Playwright ^1.64.1 (end-to-end) |
 | CI | GitHub Actions (`.github/workflows/ci.yml`): on every push and pull request to `main`, Node.js 22 runs `npm ci`, `npm test`, `npm run build` and the Playwright tests with `AI_MODE=mock` |
-| AI | GitHub Models chat completions API, model from `AI_MODEL` (default `openai/gpt-4o-mini`), called only by `server/src/ai/index.js`; `AI_MODE=mock` (default) or `live`, token `GITHUB_TOKEN` only in `server/.env` |
+| AI | Gemini API (`interactions` endpoint), model from `AI_MODEL` (default `gemini-3.6-flash`), called only by `server/src/ai/index.js`; `AI_MODE=mock` (default) or `live`, key `GEMINI_API_KEY` only in `server/.env` |
 
 ---
 
@@ -55,7 +55,7 @@ Could requirements (FR-M3-05, FR-M4-06, FR-M4-07, FR-M5-07, FR-M6-05) are built 
 
 **Access control.** Every protected request passes three checks on the backend, because hiding a button in React does not stop a request sent without the form. `requireAuth` verifies the JWT signature and expiry and rejects revoked tokens, whose `jti` was stored in `revoked_tokens` at logout (401 otherwise); the token is signed but not secret, so it carries only the user id, the role and a random token id (`jti`), never a password or child records, and the signing secret is read from `server/.env`. `requireRole` then rejects routes meant for other roles (403), and `requireChildAccess` loads the current link from the database for every request about a child: the parent must own the child (`children.parent_id`), a specialist must have a row in `specialist_links`, and a child may only reach their own tasks and events (403 otherwise). Routes under `/api/children/:childId` get this check once at router level, `GET` and `POST /api/tasks` check the `childId` sent with the request (a child always gets only their own tasks), and routes with a record id (`/api/tasks/:id`, `/api/entries/:id`, `/api/documents/:id/file`, `/api/summaries/:id/feedback`) first load the record and check its child, so knowing an id gives no access. Because the link is read on every request, a specialist whom the parent has just unlinked gets 403 even with an unexpired token.
 
-**AI module.** The AI has one job, summarizing a child's week; tasks, schedule and statistics are normal application code and work without it. The summary route runs the same access checks and selects only the week's records the reader may see, so other records never reach the provider and access control does not depend on the prompt; for a week without records it answers "nothing to summarize" without calling the provider. `buildMessages` always adds the fixed instruction to use only the given records and not to diagnose, suggest a treatment or decide, plus different wording for parents (plain language) and specialists (observations and progress per development area). The result is stored with its source record ids and shown with the label "AI-generated", links to those records and the note "Bu bir yapay zekâ önerisidir; karar size aittir.", so the decision stays with the user; if the provider fails, the summary panel shows a clear error and the rest of the page keeps working. The provider call is aborted after 15 seconds (`AbortSignal.timeout(15000)`) and the route then answers 502 with the same error message. The GitHub Models token is read only from `server/.env` and never reaches the frontend or GitHub, and `AI_MODE=mock` (default, used in tests and CI) returns a fixed text per reader role without a network call.
+**AI module.** The AI has one job, summarizing a child's week; tasks, schedule and statistics are normal application code and work without it. The summary route runs the same access checks and selects only the week's records the reader may see, so other records never reach the provider and access control does not depend on the prompt; for a week without records it answers "nothing to summarize" without calling the provider. `buildMessages` always adds the fixed instruction to use only the given records and not to diagnose, suggest a treatment or decide, plus different wording for parents (plain language) and specialists (observations and progress per development area). The result is stored with its source record ids and shown with the label "AI-generated", links to those records and the note "Bu bir yapay zekâ önerisidir; karar size aittir.", so the decision stays with the user; if the provider fails, the summary panel shows a clear error and the rest of the page keeps working. The provider call is aborted after 15 seconds (`AbortSignal.timeout(15000)`) and the route then answers 502 with the same error message. The Gemini API key is read only from `server/.env` and never reaches the frontend or GitHub, and `AI_MODE=mock` (default, used in tests and CI) returns a fixed text per reader role without a network call.
 
 ---
 
@@ -336,3 +336,4 @@ sequenceDiagram
 | Date | Change | By |
 |---|---|---|
 | 2026-10-31 | First version | Mert Akdemir |
+| 2026-11-07 | AI provider changed to the Gemini API, because GitHub Models was retired on 30 July 2026 | Mert Akdemir |
