@@ -36,4 +36,79 @@ describe('AI module', () => {
 
     expect(JSON.parse(user)).toEqual(records);
   });
+
+  describe('live mode', () => {
+    const saved = { ...process.env };
+
+    function answerWith(body, { ok = true, status = 200 } = {}) {
+      return jest.spyOn(global, 'fetch').mockResolvedValue({ ok, status, json: async () => body });
+    }
+
+    beforeEach(() => {
+      process.env.AI_MODE = 'live';
+      process.env.GEMINI_API_KEY = 'test-key';
+      delete process.env.AI_MODEL;
+    });
+
+    afterEach(() => {
+      process.env = { ...saved };
+      jest.restoreAllMocks();
+    });
+
+    test('sends the prompt to the Gemini API with the key in the header', async () => {
+      const fetchSpy = answerWith({ steps: [{ type: 'model_output', content: [{ text: 'Özet' }] }] });
+
+      await summarize({ role: 'parent', records });
+
+      const [url, options] = fetchSpy.mock.calls[0];
+      const [system, user] = buildMessages('parent', records);
+      expect(url).toBe('https://generativelanguage.googleapis.com/v1beta/interactions');
+      expect(url).not.toContain('test-key');
+      expect(options.headers['x-goog-api-key']).toBe('test-key');
+      expect(options.headers['Api-Revision']).toBe('2026-05-20');
+      expect(JSON.parse(options.body)).toEqual({
+        model: 'gemini-3.6-flash',
+        system_instruction: system.content,
+        input: user.content,
+      });
+    });
+
+    test('uses the model from AI_MODEL when it is set', async () => {
+      process.env.AI_MODEL = 'gemini-3.8-flash';
+      const fetchSpy = answerWith({ steps: [{ type: 'model_output', content: [{ text: 'Özet' }] }] });
+
+      await summarize({ role: 'parent', records });
+
+      expect(JSON.parse(fetchSpy.mock.calls[0][1].body).model).toBe('gemini-3.8-flash');
+    });
+
+    test('reads the answer from the model_output step and skips the other steps', async () => {
+      answerWith({
+        steps: [
+          { type: 'thought', summary: 'düşünce' },
+          { type: 'model_output', content: [{ text: 'Bu hafta ' }, { text: 'iyi geçti.' }] },
+        ],
+      });
+
+      const result = await summarize({ role: 'parent', records });
+
+      expect(result).toEqual({ text: 'Bu hafta iyi geçti.', mock: false });
+    });
+
+    test('throws when the provider answers with an error', async () => {
+      answerWith({}, { ok: false, status: 429 });
+
+      await expect(summarize({ role: 'parent', records })).rejects.toThrow('AI provider returned 429');
+    });
+
+    test.each([
+      ['no steps', {}],
+      ['no model_output step', { steps: [{ type: 'thought' }] }],
+      ['an empty answer', { steps: [{ type: 'model_output', content: [] }] }],
+    ])('throws when the response has %s', async (_name, body) => {
+      answerWith(body);
+
+      await expect(summarize({ role: 'parent', records })).rejects.toThrow('AI provider returned no text');
+    });
+  });
 });
