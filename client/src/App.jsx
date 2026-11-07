@@ -1,48 +1,53 @@
-import { useEffect, useState } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { AuthProvider, START_PATHS, useAuth } from './AuthContext.jsx';
+import ChildTasksPage from './ChildTasksPage.jsx';
+import LoginPage from './LoginPage.jsx';
+import ParentDashboard from './ParentDashboard.jsx';
+import ProtectedRoute from './ProtectedRoute.jsx';
+import SpecialistChildrenPage from './SpecialistChildrenPage.jsx';
 
-const STATUS_LABELS = { not_done: 'Yapılmadı', done: 'Yapıldı' };
+function Home() {
+  const { user, loading } = useAuth();
 
-// Walking skeleton screen: shows that the frontend can reach the API and the API can read the database.
-// The real screens (login, dashboards) replace this in v0.1.
+  if (loading) {
+    return <p>Yükleniyor…</p>;
+  }
+  return <Navigate to={user ? START_PATHS[user.role] : '/login'} replace />;
+}
+
 export default function App() {
-  const [health, setHealth] = useState(null);
-  const [tasks, setTasks] = useState(null);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    fetch('/api/health')
-      .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
-      .then(setHealth)
-      .catch(() => setError(true));
-    fetch('/api/tasks')
-      .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
-      .then(setTasks)
-      .catch(() => setError(true));
-  }, []);
-
   return (
-    <main style={{ fontFamily: 'system-ui, sans-serif', maxWidth: 480, margin: '64px auto', padding: '0 16px' }}>
-      <h1>Çocuk Gelişim Platformu</h1>
-      {!health && !error && <p>Sunucuya bağlanılıyor…</p>}
-      {error && <p role="alert">Sunucuya ulaşılamadı. Sunucunun çalıştığından emin olun.</p>}
-      {health && (
-        <p data-testid="health">
-          Sistem durumu: <strong>çalışıyor</strong> · Kayıtlı kullanıcı: {health.users}
-        </p>
-      )}
-      {!tasks && !error && <p>Görevler yükleniyor…</p>}
-      {tasks && (
-        <>
-          <h2>Görevler</h2>
-          <ul>
-            {tasks.map((task) => (
-              <li key={task.id} data-testid="task">
-                {task.title} · {STATUS_LABELS[task.status]}
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-    </main>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path={START_PATHS.parent}
+            element={
+              <ProtectedRoute role="parent">
+                <ParentDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={START_PATHS.specialist}
+            element={
+              <ProtectedRoute role="specialist">
+                <SpecialistChildrenPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={START_PATHS.child}
+            element={
+              <ProtectedRoute role="child">
+                <ChildTasksPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Home />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
