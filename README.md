@@ -21,7 +21,20 @@ npm run seed
 npm run dev
 ```
 
-Then open http://localhost:5173. The page should say "Sistem durumu: çalışıyor", show the number of seeded users and, under "Görevler", the sample task "20 dakika kitap oku" that the seed stored in the database. The API runs on http://localhost:3001.
+Then open http://localhost:5173. The login page should say "Sistem durumu: çalışıyor" and show the number of seeded users. Log in with a demo account: each role opens its own start screen, and `child@demo.test` sees the sample task "20 dakika kitap oku" that the seed stored in the database. The API runs on http://localhost:3001.
+
+### JWT_SECRET
+
+Login tokens are signed with `JWT_SECRET` from `server/.env`.
+
+- Empty or missing during development and tests: the server makes a random secret at startup and logs one warning, so all logins end when it restarts. Set a value to stay logged in across restarts.
+- With `NODE_ENV=production` it is required: the server refuses to start without it.
+
+To generate a value:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
 
 ### Demo accounts
 
