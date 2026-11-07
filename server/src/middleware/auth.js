@@ -58,4 +58,13 @@ function createRequireAuth(db, secret) {
   };
 }
 
-module.exports = { JWT_ALGORITHM, loadJwtSecret, createRequireAuth };
+function requireRole(...roles) {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+    next();
+  };
+}
+
+module.exports = { JWT_ALGORITHM, loadJwtSecret, createRequireAuth, requireRole };

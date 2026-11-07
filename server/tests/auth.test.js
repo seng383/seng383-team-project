@@ -267,6 +267,7 @@ describe('auth endpoints', () => {
     test.each([
       ['get', '/api/auth/me'],
       ['post', '/api/auth/logout'],
+      ['get', '/api/tasks'],
     ])('%s %s needs a token', async (method, url) => {
       const res = await request(app)[method](url);
 
@@ -302,6 +303,8 @@ describe('auth endpoints', () => {
       await logOut(token);
 
       expect((await me(token)).status).toBe(401);
+      const tasks = await request(app).get('/api/tasks').set('Authorization', `Bearer ${token}`);
+      expect(tasks.status).toBe(401);
     });
 
     test('cannot be repeated with the same token', async () => {

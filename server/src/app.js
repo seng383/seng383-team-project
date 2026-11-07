@@ -1,5 +1,5 @@
 const express = require('express');
-const { loadJwtSecret, createRequireAuth } = require('./middleware/auth');
+const { loadJwtSecret, createRequireAuth, requireRole } = require('./middleware/auth');
 const { authRoutes } = require('./routes/auth');
 
 // Builds the Express app around a database connection, so tests can pass an in-memory database.
@@ -18,12 +18,12 @@ function createApp(db) {
 
   app.use('/api/auth', authRoutes(db, jwtSecret, requireAuth));
 
-  // No login yet: M1 adds the JWT check and M4 returns only the tasks the user may see.
-  app.get('/api/tasks', (req, res) => {
+  // Children only until M2 adds the link check that parents and specialists need here.
+  app.get('/api/tasks', requireAuth, requireRole('child'), (req, res) => {
     const tasks = db.prepare(
       'SELECT id, child_id AS childId, title, description, development_area AS developmentArea, ' +
-        'due_date AS dueDate, status FROM tasks ORDER BY id'
-    ).all();
+        'due_date AS dueDate, status FROM tasks WHERE child_id = ? ORDER BY id'
+    ).all(req.user.id);
     res.json(tasks);
   });
 
