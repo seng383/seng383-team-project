@@ -23,7 +23,8 @@ function ChildCard({ child }) {
   const [email, setEmail] = useState('');
   const [linkNotice, setLinkNotice] = useState(null);
   const [linkError, setLinkError] = useState(null);
-  const [linking, setLinking] = useState(false);
+  // One change at a time: the answers to a link and an unlink that overlap could leave the list unlike the server's.
+  const [saving, setSaving] = useState(false);
   const [confirmingId, setConfirmingId] = useState(null);
   const [unlinkError, setUnlinkError] = useState(null);
 
@@ -37,7 +38,7 @@ function ChildCard({ child }) {
     event.preventDefault();
     setLinkNotice(null);
     setLinkError(null);
-    setLinking(true);
+    setSaving(true);
     try {
       const linked = await api(`/api/children/${child.id}/specialists`, { method: 'POST', body: { email } });
       // The API answers a repeated link with the existing one, so only the list tells the two cases apart.
@@ -51,7 +52,7 @@ function ChildCard({ child }) {
     } catch (err) {
       setLinkError(err.status === 400 ? 'Bu e-posta kayıtlı bir uzmana ait değil.' : 'Uzman eklenemedi. Lütfen tekrar deneyin.');
     }
-    setLinking(false);
+    setSaving(false);
   }
 
   function askToUnlink(specialistId) {
@@ -62,6 +63,7 @@ function ChildCard({ child }) {
   async function handleUnlink(specialistId) {
     setLinkNotice(null);
     setUnlinkError(null);
+    setSaving(true);
     try {
       await api(`/api/children/${child.id}/specialists/${specialistId}`, { method: 'DELETE' });
       setSpecialists((list) => list.filter((specialist) => specialist.id !== specialistId));
@@ -69,6 +71,7 @@ function ChildCard({ child }) {
     } catch {
       setUnlinkError('Bağlantı kaldırılamadı. Lütfen tekrar deneyin.');
     }
+    setSaving(false);
   }
 
   return (
@@ -115,7 +118,7 @@ function ChildCard({ child }) {
                       <button type="button" onClick={() => setConfirmingId(null)}>
                         Vazgeç
                       </button>
-                      <button type="button" onClick={() => handleUnlink(specialist.id)} style={primaryButtonStyle}>
+                      <button type="button" disabled={saving} onClick={() => handleUnlink(specialist.id)} style={primaryButtonStyle}>
                         Evet, kaldır
                       </button>
                     </div>
@@ -145,7 +148,7 @@ function ChildCard({ child }) {
               </p>
             )}
             {linkNotice && <p role="status">{linkNotice}</p>}
-            <button type="submit" disabled={linking} style={{ ...primaryButtonStyle, width: '100%' }}>
+            <button type="submit" disabled={saving} style={{ ...primaryButtonStyle, width: '100%' }}>
               Uzman ekle
             </button>
           </form>

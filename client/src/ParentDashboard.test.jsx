@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, test } from 'vitest';
 import { setToken } from './api.js';
@@ -170,6 +170,13 @@ describe('ParentDashboard', () => {
       return rows[rowIndex];
     }
 
+    // Holds back the next API answer, so a test can act while that request is pending.
+    function holdNextAnswer(fetchMock) {
+      let answer;
+      fetchMock.mockImplementationOnce(() => new Promise((resolve) => (answer = resolve)));
+      return (status, body) => act(async () => answer({ ok: true, status, json: async () => body }));
+    }
+
     test('asks first and sends nothing until the parent confirms', async () => {
       const fetchMock = renderDashboard({ [`DELETE ${ELIF_LINK}`]: { status: 204 } });
 
@@ -230,6 +237,7 @@ describe('ParentDashboard', () => {
 
       expect(await screen.findByRole('alert')).toHaveTextContent('Bağlantı kaldırılamadı. Lütfen tekrar deneyin.');
       expect(screen.getAllByTestId('specialist')).toHaveLength(2);
+      expect(within(row).getByRole('button', { name: 'Evet, kaldır' })).toBeEnabled();
     });
 
     test('a specialist can be linked again after an unlink', async () => {
@@ -242,6 +250,43 @@ describe('ParentDashboard', () => {
 
       expect(await screen.findByRole('status')).toHaveTextContent('Uzman bağlandı.');
       expect(screen.getAllByTestId('specialist')).toHaveLength(2);
+    });
+
+    test.each([
+      ['coach@demo.test', zeynep, ['Murat Şahin', 'Zeynep Arslan']],
+      ['teacher@demo.test', elif, ['Murat Şahin', 'Elif Kaya']],
+    ])('holds back the link of %s while an unlink is pending, so the list stays that of the server', async (email, linked, names) => {
+      const fetchMock = renderDashboard({ [`POST ${LINKS}`]: { status: 201, body: linked } });
+      const row = await openConfirmation();
+      const answerDelete = holdNextAnswer(fetchMock);
+
+      fireEvent.click(within(row).getByRole('button', { name: 'Evet, kaldır' }));
+      await submitEmail(email);
+
+      expect(fetchMock.mock.calls.filter(([, options]) => options.method === 'POST')).toHaveLength(0);
+
+      await answerDelete(204);
+      await submitEmail(email);
+
+      expect(await screen.findByRole('status')).toHaveTextContent('Uzman bağlandı.');
+      expect(screen.getAllByTestId('specialist').map((specialist) => specialist.querySelector('strong').textContent)).toEqual(names);
+    });
+
+    test('holds back an unlink while a link is pending, so the list stays that of the server', async () => {
+      const fetchMock = renderDashboard({ [`DELETE ${ELIF_LINK}`]: { status: 204 } });
+      const row = await openConfirmation();
+      const answerPost = holdNextAnswer(fetchMock);
+
+      await submitEmail('teacher@demo.test');
+      fireEvent.click(within(row).getByRole('button', { name: 'Evet, kaldır' }));
+
+      expect(deleteRequests(fetchMock)).toHaveLength(0);
+
+      await answerPost(200, elif);
+      fireEvent.click(within(row).getByRole('button', { name: 'Evet, kaldır' }));
+
+      await waitFor(() => expect(screen.getAllByTestId('specialist')).toHaveLength(1));
+      expect(screen.getByTestId('specialist')).toHaveTextContent('Murat Şahin');
     });
   });
 });
