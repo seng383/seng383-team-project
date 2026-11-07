@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, test } from 'vitest';
 import { getToken, setToken } from './api.js';
 import App from './App.jsx';
@@ -147,6 +147,25 @@ describe('App', () => {
       expect(await screen.findByRole('heading', { name: 'Giriş yap' })).toBeInTheDocument();
       expect(window.location.pathname).toBe('/login');
       expect(getToken()).toBeNull();
+    });
+
+    test('a page restored from the back/forward cache after another login hides the first user (FR-M1-03)', async () => {
+      logInAs('parent', {
+        'GET /api/children': { body: [{ id: 2, name: 'Can Demir' }] },
+        'GET /api/children/2/specialists': { body: [] },
+      });
+      open('/parent');
+      expect(await screen.findByRole('heading', { name: 'Can Demir' })).toBeInTheDocument();
+
+      logInAs('specialist');
+      act(() => {
+        window.dispatchEvent(Object.assign(new Event('pageshow'), { persisted: true }));
+      });
+
+      expect(await screen.findByRole('alert')).toHaveTextContent('Bu sayfaya erişim izniniz yok.');
+      expect(screen.getByText('Elif Kaya · Uzman')).toBeInTheDocument();
+      expect(screen.queryByText('Can Demir')).not.toBeInTheDocument();
+      expect(screen.queryByText(/Ayşe Demir/)).not.toBeInTheDocument();
     });
 
     test('a 401 from the API clears the session and opens the login page', async () => {
