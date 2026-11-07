@@ -1,5 +1,5 @@
 const express = require('express');
-const { loadJwtSecret, createRequireAuth, requireRole } = require('./middleware/auth');
+const { loadJwtSecret, createRequireAuth } = require('./middleware/auth');
 const { createChildAccess } = require('./middleware/childAccess');
 const { authRoutes } = require('./routes/auth');
 const { childrenRoutes } = require('./routes/children');
@@ -8,7 +8,11 @@ const { childrenRoutes } = require('./routes/children');
 function createApp(db) {
   const jwtSecret = loadJwtSecret();
   const requireAuth = createRequireAuth(db, jwtSecret);
-  const { requireChildAccess } = createChildAccess(db);
+  const { canAccessChild, requireChildAccess } = createChildAccess(db);
+  const findTasks = db.prepare(
+    'SELECT id, child_id AS childId, title, description, development_area AS developmentArea, ' +
+      'due_date AS dueDate, status FROM tasks WHERE child_id = ? ORDER BY id'
+  );
 
   const app = express();
   app.use(express.json());
@@ -22,13 +26,18 @@ function createApp(db) {
   app.use('/api/auth', authRoutes(db, jwtSecret, requireAuth));
   app.use('/api/children', childrenRoutes(db, requireAuth, requireChildAccess));
 
-  // Children only until M2 adds the link check that parents and specialists need here.
-  app.get('/api/tasks', requireAuth, requireRole('child'), (req, res) => {
-    const tasks = db.prepare(
-      'SELECT id, child_id AS childId, title, description, development_area AS developmentArea, ' +
-        'due_date AS dueDate, status FROM tasks WHERE child_id = ? ORDER BY id'
-    ).all(req.user.id);
-    res.json(tasks);
+  // A child always gets their own tasks, whatever childId they send.
+  app.get('/api/tasks', requireAuth, (req, res) => {
+    if (req.user.role === 'child') {
+      return res.json(findTasks.all(req.user.id));
+    }
+    if (!req.query.childId) {
+      return res.status(400).json({ error: 'childId is required' });
+    }
+    if (!canAccessChild(req.user, req.query.childId)) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+    res.json(findTasks.all(Number(req.query.childId)));
   });
 
   app.use('/api', (req, res) => {
