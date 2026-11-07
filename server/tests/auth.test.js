@@ -130,6 +130,41 @@ describe('auth endpoints', () => {
     });
   });
 
+  describe('invalid request bodies', () => {
+    test('answers malformed JSON with a JSON 400 and no stack trace', async () => {
+      const res = await request(app)
+        .post('/api/auth/login')
+        .set('Content-Type', 'application/json')
+        .send('{"email": ');
+
+      expect(res.status).toBe(400);
+      expect(res.type).toBe('application/json');
+      expect(res.body).toEqual({ error: 'Bad request' });
+      expect(res.text).not.toMatch(/SyntaxError|node_modules/);
+    });
+
+    test('keeps the status of other body errors and still answers in JSON', async () => {
+      const res = await request(app)
+        .post('/api/auth/login')
+        .send({ email: 'a'.repeat(200 * 1024), password: 'x' });
+
+      expect(res.status).toBe(413);
+      expect(res.type).toBe('application/json');
+    });
+
+    test('answers an unexpected server error with a JSON 500 and no details', async () => {
+      const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+      db.exec('DROP TABLE tasks; DROP TABLE specialist_links; DROP TABLE children; DROP TABLE users');
+
+      const res = await request(app).get('/api/health');
+
+      expect(res.status).toBe(500);
+      expect(res.body).toEqual({ error: 'Internal server error' });
+      expect(consoleError).toHaveBeenCalled();
+      consoleError.mockRestore();
+    });
+  });
+
   describe('GET /api/auth/me', () => {
     test.each(accounts)('returns the $role of the token without the password hash', async ({ email, name, role }) => {
       const user = db.prepare('SELECT id FROM users WHERE email = ?').get(email);

@@ -31,6 +31,15 @@ function createApp(db) {
     res.status(404).json({ error: 'Not found' });
   });
 
+  // Express would otherwise answer errors such as malformed JSON with an HTML stack trace.
+  app.use((err, req, res, next) => {
+    if (err.status >= 400 && err.status < 500) {
+      return res.status(err.status).json({ error: 'Bad request' });
+    }
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  });
+
   return app;
 }
 
