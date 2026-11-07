@@ -130,6 +130,17 @@ describe('/api/children', () => {
       ]);
     });
 
+    test('lists only the specialists of that child, not the links of another child (FR-M2-01)', async () => {
+      const otherChildId = addOtherParent();
+      db.prepare('INSERT INTO specialist_links (child_id, specialist_id) VALUES (?, ?)').run(otherChildId, coachId);
+
+      const own = await (await as('parent@demo.test')).get(`/api/children/${childId}/specialists`);
+      const other = await (await as('other-parent@demo.test')).get(`/api/children/${otherChildId}/specialists`);
+
+      expect(own.body.map((specialist) => specialist.name)).toEqual(['Elif Kaya', 'Murat Şahin']);
+      expect(other.body.map((specialist) => specialist.name)).toEqual(['Zeynep Arslan']);
+    });
+
     test.each(['teacher@demo.test', 'coach@demo.test', 'child@demo.test'])('answers 403 to %s (parent only)', async (email) => {
       const res = await (await as(email)).get(`/api/children/${childId}/specialists`);
 
