@@ -1,7 +1,12 @@
 const express = require('express');
+const { loadJwtSecret, createRequireAuth } = require('./middleware/auth');
+const { authRoutes } = require('./routes/auth');
 
 // Builds the Express app around a database connection, so tests can pass an in-memory database.
 function createApp(db) {
+  const jwtSecret = loadJwtSecret();
+  const requireAuth = createRequireAuth(db, jwtSecret);
+
   const app = express();
   app.use(express.json());
 
@@ -10,6 +15,8 @@ function createApp(db) {
     const { count } = db.prepare('SELECT COUNT(*) AS count FROM users').get();
     res.json({ status: 'ok', database: 'ok', users: count });
   });
+
+  app.use('/api/auth', authRoutes(db, jwtSecret, requireAuth));
 
   // No login yet: M1 adds the JWT check and M4 returns only the tasks the user may see.
   app.get('/api/tasks', (req, res) => {
