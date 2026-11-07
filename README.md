@@ -62,10 +62,10 @@ CI (GitHub Actions) runs all of these on every pull request to `main`.
 
 ## AI module
 
-All calls to the AI provider (GitHub Models) go through `server/src/ai/index.js`.
+All calls to the AI provider (Gemini API) go through `server/src/ai/index.js`.
 
 - `AI_MODE=mock` (default): returns a fixed summary, no network, no token needed. Tests and CI always use this.
-- `AI_MODE=live`: set `GITHUB_TOKEN` (a GitHub token with access to GitHub Models) and optionally `AI_MODEL` in `server/.env`.
+- `AI_MODE=live`: set `GEMINI_API_KEY` (a key from https://aistudio.google.com/api-keys) and optionally `AI_MODEL` (default `gemini-3.6-flash`) in `server/.env`. On the free tier Google may use what is sent to improve its products, so use only the synthetic demo data.
 
 Never commit `server/.env`.
 
