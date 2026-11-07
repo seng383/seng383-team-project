@@ -240,4 +240,94 @@ describe('/api/children', () => {
       expect(linkRows()).toHaveLength(0);
     });
   });
+
+  describe('DELETE /api/children/:childId/specialists/:specialistId', () => {
+    let teacherId;
+    const path = () => `/api/children/${childId}/specialists/${teacherId}`;
+
+    function linkCount() {
+      return db.prepare('SELECT COUNT(*) AS count FROM specialist_links').get().count;
+    }
+
+    beforeEach(() => {
+      teacherId = idOf('teacher@demo.test');
+    });
+
+    test('needs a token', async () => {
+      const res = await request(app).delete(path());
+
+      expect(res.status).toBe(401);
+      expect(linkRows(teacherId)).toHaveLength(1);
+    });
+
+    test('removes only that link and answers 204 without a body (FR-M2-04)', async () => {
+      const parent = await as('parent@demo.test');
+
+      const res = await parent.delete(path());
+
+      expect(res.status).toBe(204);
+      expect(res.text).toBe('');
+      expect(linkRows(teacherId)).toHaveLength(0);
+      const list = await parent.get(`/api/children/${childId}/specialists`);
+      expect(list.body.map((specialist) => specialist.name)).toEqual(['Murat Şahin']);
+    });
+
+    test('keeps the link of the same specialist to another child', async () => {
+      const otherChildId = addOtherParent();
+      db.prepare('INSERT INTO specialist_links (child_id, specialist_id) VALUES (?, ?)').run(otherChildId, teacherId);
+
+      await (await as('parent@demo.test')).delete(path());
+
+      expect(db.prepare('SELECT * FROM specialist_links WHERE child_id = ?').all(otherChildId)).toHaveLength(1);
+    });
+
+    test.each([
+      ['a specialist who is not linked', () => coachId],
+      ['a specialist id that is not a number', () => 'abc'],
+    ])('answers 204 and changes nothing for %s', async (_, specialistId) => {
+      const before = linkCount();
+
+      const res = await (await as('parent@demo.test')).delete(`/api/children/${childId}/specialists/${specialistId()}`);
+
+      expect(res.status).toBe(204);
+      expect(linkCount()).toBe(before);
+    });
+
+    test.each(['teacher@demo.test', 'psychologist@demo.test', 'coach@demo.test', 'child@demo.test'])(
+      'answers 403 to %s and keeps the link',
+      async (email) => {
+        const res = await (await as(email)).delete(path());
+
+        expect(res.status).toBe(403);
+        expect(linkRows(teacherId)).toHaveLength(1);
+      }
+    );
+
+    test('answers 403 to a second parent and keeps the link', async () => {
+      addOtherParent();
+
+      const res = await (await as('other-parent@demo.test')).delete(path());
+
+      expect(res.status).toBe(403);
+      expect(res.body).toEqual({ error: 'Forbidden' });
+      expect(linkRows(teacherId)).toHaveLength(1);
+    });
+
+    test('answers 403 for a malformed childId and keeps the link', async () => {
+      const res = await (await as('parent@demo.test')).delete(`/api/children/abc/specialists/${teacherId}`);
+
+      expect(res.status).toBe(403);
+      expect(linkRows(teacherId)).toHaveLength(1);
+    });
+
+    test('lets the parent link the specialist again after an unlink', async () => {
+      const parent = await as('parent@demo.test');
+      await parent.delete(path());
+
+      const res = await parent.post(`/api/children/${childId}/specialists`, { email: 'teacher@demo.test' });
+
+      expect(res.status).toBe(201);
+      expect(linkRows(teacherId)).toHaveLength(1);
+    });
+  });
 });
