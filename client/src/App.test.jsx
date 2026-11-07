@@ -133,6 +133,7 @@ describe('App', () => {
       expect(await screen.findByRole('alert')).toHaveTextContent('Bu sayfaya erişim izniniz yok.');
       expect(window.location.pathname).toBe(path);
       expect(requestTo(fetchMock, '/api/tasks')).toBeUndefined();
+      expect(requestTo(fetchMock, '/api/children')).toBeUndefined();
     });
   });
 
