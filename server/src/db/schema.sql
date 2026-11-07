@@ -1,4 +1,4 @@
--- First version of the schema. The walking skeleton adds the tasks table (M4); the other tables for M3-M8 are added in their own pull requests.
+-- First version of the schema. The walking skeleton added the tasks table (M4) and M1 adds revoked_tokens; the other tables for M3-M8 are added in their own pull requests.
 
 CREATE TABLE IF NOT EXISTS users (
   id              INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,4 +35,10 @@ CREATE TABLE IF NOT EXISTS tasks (
   status           TEXT    NOT NULL DEFAULT 'not_done' CHECK (status IN ('not_done', 'done')),
   completed_at     TEXT,
   created_at       TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Tokens ended by logout; a row is only needed until the token would have expired anyway (M1)
+CREATE TABLE IF NOT EXISTS revoked_tokens (
+  jti        TEXT PRIMARY KEY,
+  expires_at TEXT NOT NULL
 );
