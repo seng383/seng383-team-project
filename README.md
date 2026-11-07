@@ -21,7 +21,7 @@ npm run seed
 npm run dev
 ```
 
-Then open http://localhost:5173. The login page should say "Sistem durumu: çalışıyor" and show the number of seeded users. Log in with a demo account: each role opens its own start screen, and `child@demo.test` sees the sample task "20 dakika kitap oku" that the seed stored in the database. The API runs on http://localhost:3001.
+Then open http://localhost:5173. The login page should say "Sistem durumu: çalışıyor" and show the number of seeded users. Log in with a demo account: each role opens its own start screen, and `child@demo.test` sees the sample task "20 dakika kitap oku" that the seed stored in the database. `parent@demo.test` can link a specialist by email (try `coach@demo.test`) and unlink them; a specialist sees exactly the children linked to them, and an unlink takes effect on their next request. The API runs on http://localhost:3001.
 
 ### JWT_SECRET
 
