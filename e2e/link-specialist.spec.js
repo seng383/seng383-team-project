@@ -37,8 +37,8 @@ test.beforeEach(({ request }) => unlinkCoach(request));
 test.afterEach(({ request }) => unlinkCoach(request));
 
 // SDD Flow 3: the coach keeps the same token and the same open page through the whole test.
-test('a parent links the coach, the coach sees the child, and the unlink ends the access', async ({ page: parentPage, browser, request }) => {
-  const coachContext = await browser.newContext({ baseURL: 'http://localhost:5173' });
+test('a parent links the coach, the coach sees the child, and the unlink ends the access', async ({ page: parentPage, browser, baseURL, request }) => {
+  const coachContext = await browser.newContext({ baseURL });
   const coachPage = await coachContext.newPage();
   const specialistRows = parentPage.getByTestId('specialist');
   const coachRow = specialistRows.filter({ hasText: 'Zeynep Arslan' });

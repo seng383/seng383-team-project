@@ -98,6 +98,13 @@ describe('GET /api/tasks', () => {
     expect(res.body).toEqual({ error: 'Forbidden' });
   });
 
+  test('does not read another spelling of the id as the real child', async () => {
+    const res = await tasksAs('parent@demo.test', `?childId=${idOf('child@demo.test')}.0`);
+
+    expect(res.status).toBe(403);
+    expect(res.body).toEqual({ error: 'Forbidden' });
+  });
+
   test('does not accept a childId sent twice', async () => {
     const childId = idOf('child@demo.test');
 

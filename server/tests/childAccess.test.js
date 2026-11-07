@@ -93,6 +93,19 @@ describe('requireChildAccess', () => {
     }
   );
 
+  test.each([
+    ['%s.0', (id) => `${id}.0`],
+    ['%se0', (id) => `${id}e0`],
+    ['0%s', (id) => `0${id}`],
+    ['+%s', (id) => `+${id}`],
+    ['0x%s', (id) => `0x${id.toString(16)}`],
+  ])('does not read %s as the real child', async (_, spell) => {
+    const res = await get('parent@demo.test', spell(childId));
+
+    expect(res.status).toBe(403);
+    expect(res.body).toEqual({ error: 'Forbidden' });
+  });
+
   test('does not treat a user who is not a child as a child', async () => {
     const res = await get('parent@demo.test', idOf(db, 'parent@demo.test'));
 

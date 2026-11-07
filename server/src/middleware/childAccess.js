@@ -6,10 +6,10 @@ function createChildAccess(db) {
   };
 
   // A malformed id gets the same answer as a child without access, so nobody learns which children exist.
+  // Digits only, because Number() would read "2.0" or "2e0" as the real child 2.
   function canAccessChild(user, childId) {
-    const isId = typeof childId === 'string' && /^[1-9]\d*$/.test(childId) && Number.isSafeInteger(Number(childId));
     const linkQuery = linkQueries[user.role];
-    return isId && linkQuery !== undefined && linkQuery.get(Number(childId), user.id) !== undefined;
+    return /^[1-9]\d*$/.test(childId) && linkQuery !== undefined && linkQuery.get(Number(childId), user.id) !== undefined;
   }
 
   function requireChildAccess(req, res, next) {
