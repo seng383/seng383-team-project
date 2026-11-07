@@ -1,11 +1,14 @@
 const express = require('express');
 const { loadJwtSecret, createRequireAuth, requireRole } = require('./middleware/auth');
+const { createChildAccess } = require('./middleware/childAccess');
 const { authRoutes } = require('./routes/auth');
+const { childrenRoutes } = require('./routes/children');
 
 // Builds the Express app around a database connection, so tests can pass an in-memory database.
 function createApp(db) {
   const jwtSecret = loadJwtSecret();
   const requireAuth = createRequireAuth(db, jwtSecret);
+  const { requireChildAccess } = createChildAccess(db);
 
   const app = express();
   app.use(express.json());
@@ -17,6 +20,7 @@ function createApp(db) {
   });
 
   app.use('/api/auth', authRoutes(db, jwtSecret, requireAuth));
+  app.use('/api/children', childrenRoutes(db, requireAuth, requireChildAccess));
 
   // Children only until M2 adds the link check that parents and specialists need here.
   app.get('/api/tasks', requireAuth, requireRole('child'), (req, res) => {
