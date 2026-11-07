@@ -165,6 +165,51 @@ describe('auth endpoints', () => {
     });
   });
 
+  describe('a bad body never replaces the 401 of a protected endpoint (FR-M1-05)', () => {
+    const endpoints = [
+      ['get', '/api/auth/me'],
+      ['post', '/api/auth/logout'],
+      ['get', '/api/children'],
+      ['get', '/api/children/2/specialists'],
+      ['post', '/api/children/2/specialists'],
+      ['delete', '/api/children/2/specialists/3'],
+      ['get', '/api/tasks'],
+    ];
+
+    describe.each([
+      ['malformed JSON', (req) => req.set('Content-Type', 'application/json').send('{"email": ')],
+      ['an oversized body', (req) => req.send({ email: 'a'.repeat(200 * 1024) })],
+      ['an unsupported charset', (req) => req.set('Content-Type', 'application/json; charset=foo').send('{}')],
+    ])('%s', (_, withBody) => {
+      test.each(endpoints)('%s %s without a token', async (method, url) => {
+        const res = await withBody(request(app)[method](url));
+
+        expect(res.status).toBe(401);
+        expect(res.body).toEqual({ error: 'Unauthorized' });
+      });
+
+      test.each(endpoints)('%s %s with an invalid token', async (method, url) => {
+        const res = await withBody(request(app)[method](url).set('Authorization', 'Bearer junk'));
+
+        expect(res.status).toBe(401);
+        expect(res.body).toEqual({ error: 'Unauthorized' });
+      });
+    });
+
+    test('logout reads no body, so a bad one does not keep the session open', async () => {
+      const token = await logIn();
+
+      const res = await request(app)
+        .post('/api/auth/logout')
+        .set('Authorization', `Bearer ${token}`)
+        .set('Content-Type', 'application/json')
+        .send('{"email": ');
+
+      expect(res.status).toBe(204);
+      expect((await me(token)).status).toBe(401);
+    });
+  });
+
   describe('GET /api/auth/me', () => {
     test.each(accounts)('returns the $role of the token without the password hash', async ({ email, name, role }) => {
       const user = db.prepare('SELECT id FROM users WHERE email = ?').get(email);

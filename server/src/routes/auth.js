@@ -16,7 +16,7 @@ function authRoutes(db, secret, requireAuth) {
   const revokeToken = db.prepare("INSERT INTO revoked_tokens (jti, expires_at) VALUES (?, datetime(?, 'unixepoch'))");
   const deleteExpired = db.prepare("DELETE FROM revoked_tokens WHERE expires_at <= datetime('now')");
 
-  router.post('/login', async (req, res) => {
+  router.post('/login', express.json(), async (req, res) => {
     const { email, password } = req.body ?? {};
     const user = typeof email === 'string' ? findUser.get(email) : undefined;
     const passwordMatches =

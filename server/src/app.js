@@ -14,8 +14,8 @@ function createApp(db) {
       'due_date AS dueDate, status FROM tasks WHERE child_id = ? ORDER BY id'
   );
 
+  // Each route that reads a body parses it after its checks, so a bad body cannot replace their 401 or 403.
   const app = express();
-  app.use(express.json());
 
   // Walking skeleton check: proves the request reaches the API and the API can read the database.
   app.get('/api/health', (req, res) => {

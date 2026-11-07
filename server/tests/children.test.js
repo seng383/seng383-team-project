@@ -216,6 +216,27 @@ describe('/api/children', () => {
       expect(res.status).toBe(400);
     });
 
+    test.each([
+      ['an unlinked specialist', 'coach@demo.test'],
+      ['a linked specialist', 'teacher@demo.test'],
+      ['a child', 'child@demo.test'],
+    ])('answers 403 to %s even when the body is malformed (FR-M1-04, FR-M2-05)', async (_, email) => {
+      const res = await (await as(email)).post(path(), '{"email": ').set('Content-Type', 'application/json');
+
+      expect(res.status).toBe(403);
+      expect(res.body).toEqual({ error: 'Forbidden' });
+    });
+
+    test('answers the parent a malformed body with a JSON 400 and links no one', async () => {
+      const before = db.prepare('SELECT COUNT(*) AS count FROM specialist_links').get().count;
+
+      const res = await (await as('parent@demo.test')).post(path(), '{"email": ').set('Content-Type', 'application/json');
+
+      expect(res.status).toBe(400);
+      expect(res.body).toEqual({ error: 'Bad request' });
+      expect(db.prepare('SELECT COUNT(*) AS count FROM specialist_links').get().count).toBe(before);
+    });
+
     test.each(['COACH@demo.test', ' coach@demo.test ', 'coach@demo.test '])(
       'matches %j the same way login does: exactly',
       async (email) => {

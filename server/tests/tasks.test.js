@@ -82,6 +82,15 @@ describe('GET /api/tasks', () => {
     expect(res.body).toEqual({ error: 'Forbidden' });
   });
 
+  test('answers 403 to a specialist who is not linked even when the body is malformed (FR-M2-05)', async () => {
+    const res = await tasksWith(await logIn('coach@demo.test'), `?childId=${idOf('child@demo.test')}`)
+      .set('Content-Type', 'application/json')
+      .send('{"email": ');
+
+    expect(res.status).toBe(403);
+    expect(res.body).toEqual({ error: 'Forbidden' });
+  });
+
   test('answers 403 without data to a parent asking for the child of another parent', async () => {
     const otherChildId = addOtherFamily();
 

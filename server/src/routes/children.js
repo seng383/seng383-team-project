@@ -36,7 +36,7 @@ function childrenRoutes(db, requireAuth, requireChildAccess) {
   });
 
   // Linking someone who is already linked leaves the wanted state in place, so it is not an error.
-  router.post('/:childId/specialists', requireRole('parent'), (req, res) => {
+  router.post('/:childId/specialists', requireRole('parent'), express.json(), (req, res) => {
     const { email } = req.body ?? {};
     const specialist = typeof email === 'string' ? findSpecialist.get(email) : undefined;
     if (!specialist) {
