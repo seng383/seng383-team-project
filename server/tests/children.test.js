@@ -74,6 +74,37 @@ describe('/api/children', () => {
       expect(res.body).toEqual([{ id: otherChildId, name: 'Ela Yıldız' }]);
     });
 
+    test('gives a linked specialist the child with the parent name and link date, and nothing private', async () => {
+      const res = await (await as('teacher@demo.test')).get('/api/children');
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual([{ id: childId, name: 'Can Demir', parentName: 'Ayşe Demir', linkedAt: expect.any(String) }]);
+    });
+
+    test('gives a specialist without links an empty list (FR-M2-06)', async () => {
+      const res = await (await as('coach@demo.test')).get('/api/children');
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual([]);
+    });
+
+    test('follows the current links exactly: after a link, after a link to a second family, after an unlink (FR-M2-06)', async () => {
+      const otherChildId = addOtherParent();
+      const parent = await as('parent@demo.test');
+      const otherParent = await as('other-parent@demo.test');
+      const coach = await as('coach@demo.test');
+      const childrenOfCoach = async () => (await coach.get('/api/children')).body.map((child) => child.name);
+
+      await parent.post(`/api/children/${childId}/specialists`, { email: 'coach@demo.test' });
+      expect(await childrenOfCoach()).toEqual(['Can Demir']);
+
+      await otherParent.post(`/api/children/${otherChildId}/specialists`, { email: 'coach@demo.test' });
+      expect(await childrenOfCoach()).toEqual(['Can Demir', 'Ela Yıldız']);
+
+      await parent.delete(`/api/children/${childId}/specialists/${coachId}`);
+      expect(await childrenOfCoach()).toEqual(['Ela Yıldız']);
+    });
+
     test('answers 403 to a child (Flow 1)', async () => {
       const res = await (await as('child@demo.test')).get('/api/children');
 
