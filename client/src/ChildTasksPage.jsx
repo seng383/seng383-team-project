@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from './api.js';
 import PageLayout from './PageLayout.jsx';
 
-const STATUS_LABELS = { not_done: 'Yapılmadı', done: 'Yapıldı' };
+export const STATUS_LABELS = { not_done: 'Yapılmadı', done: 'Yapıldı' };
 
 export default function ChildTasksPage() {
   const [tasks, setTasks] = useState(null);
