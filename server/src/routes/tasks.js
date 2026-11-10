@@ -5,6 +5,8 @@ const { parseDate } = require('../dates');
 const TITLE_MAX_LENGTH = 200;
 const DESCRIPTION_MAX_LENGTH = 2000;
 const DEVELOPMENT_AREAS = ['language', 'motor_skills', 'social_emotional', 'cognitive', 'self_care'];
+// The digits-only rule of canAccessChild, so no second spelling such as "07" or "7.0" reads as task 7.
+const ID = /^[1-9]\d*$/;
 
 // FR-M4-05: every task names its assigner, so a screen can show someone the status of the tasks they assigned.
 const SELECT_TASK =
@@ -34,6 +36,11 @@ function findError({ title, description, developmentArea, dueDate }) {
   return null;
 }
 
+// The child may change the status and nothing else, and only to done (FR-M4-03).
+function isMarkDone(body) {
+  return typeof body === 'object' && body !== null && Object.keys(body).length === 1 && body.status === 'done';
+}
+
 function tasksRoutes(db, requireAuth, canAccessChild) {
   const router = express.Router();
   const findTask = db.prepare(`${SELECT_TASK} WHERE t.id = ?`);
@@ -43,6 +50,21 @@ function tasksRoutes(db, requireAuth, canAccessChild) {
   const insertTask = db.prepare(
     'INSERT INTO tasks (child_id, assigned_by, title, description, development_area, due_date) VALUES (?, ?, ?, ?, ?, ?)'
   );
+  const findTaskChild = db.prepare('SELECT child_id AS childId FROM tasks WHERE id = ?');
+  // Only a task that is not done yet changes, so marking it again keeps the first completion time.
+  const markDone = db.prepare(
+    "UPDATE tasks SET status = 'done', completed_at = datetime('now') WHERE id = ? AND status = 'not_done'"
+  );
+
+  // FR-M4-04: the task is loaded first, and a task of another child gets the same 403 as one that does not exist,
+  // so knowing an id gives no access and reveals nothing.
+  function requireOwnTask(req, res, next) {
+    const task = ID.test(req.params.id) ? findTaskChild.get(Number(req.params.id)) : undefined;
+    if (task?.childId !== req.user.id) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+    next();
+  }
 
   router.use(requireAuth);
 
@@ -88,6 +110,17 @@ function tasksRoutes(db, requireAuth, canAccessChild) {
       task.dueDate
     );
     res.status(201).json(findTask.get(lastInsertRowid));
+  });
+
+  // FR-M4-03: only the child marks a task done; the SDD gives parents and specialists no way to change one.
+  // The body is read after both checks, so a bad body cannot replace their 403.
+  router.patch('/:id', requireRole('child'), requireOwnTask, express.json(), (req, res) => {
+    if (!isMarkDone(req.body)) {
+      return res.status(400).json({ error: 'body must be exactly {"status": "done"}' });
+    }
+    const id = Number(req.params.id);
+    markDone.run(id);
+    res.json(findTask.get(id));
   });
 
   return router;
