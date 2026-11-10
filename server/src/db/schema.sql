@@ -1,4 +1,4 @@
--- First version of the schema. The walking skeleton added the tasks table (M4) and M1 adds revoked_tokens; the other tables for M3-M8 are added in their own pull requests.
+-- First version of the schema. The walking skeleton added the tasks table (M4), M1 adds revoked_tokens and M3 adds events; the other tables for M5-M8 are added in their own pull requests.
 
 CREATE TABLE IF NOT EXISTS users (
   id              INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,4 +41,16 @@ CREATE TABLE IF NOT EXISTS tasks (
 CREATE TABLE IF NOT EXISTS revoked_tokens (
   jti        TEXT PRIMARY KEY,
   expires_at TEXT NOT NULL
+);
+
+-- Events on a child's weekly schedule (M3). Dates are 'YYYY-MM-DD' and times 'HH:MM', so text order is time order.
+CREATE TABLE IF NOT EXISTS events (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  child_id   INTEGER NOT NULL REFERENCES children(user_id) ON DELETE CASCADE,
+  created_by INTEGER NOT NULL REFERENCES users(id),
+  title      TEXT    NOT NULL,
+  event_date TEXT    NOT NULL,
+  start_time TEXT    NOT NULL,
+  end_time   TEXT    NOT NULL,
+  created_at TEXT    NOT NULL DEFAULT (datetime('now'))
 );

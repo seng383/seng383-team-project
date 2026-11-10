@@ -22,7 +22,7 @@ function seed(db) {
   );
 
   const run = db.transaction(() => {
-    db.exec('DELETE FROM tasks; DELETE FROM specialist_links; DELETE FROM children; DELETE FROM users;');
+    db.exec('DELETE FROM events; DELETE FROM tasks; DELETE FROM specialist_links; DELETE FROM children; DELETE FROM users;');
 
     const ids = {};
     for (const u of users) {
