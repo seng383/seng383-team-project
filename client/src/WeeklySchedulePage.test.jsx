@@ -5,7 +5,7 @@ import { setToken } from './api.js';
 import { AuthProvider } from './AuthContext.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import { mockApi, requestTo } from './testUtils.js';
-import WeeklySchedulePage from './WeeklySchedulePage.jsx';
+import WeeklySchedulePage, { ChildSchedulePage } from './WeeklySchedulePage.jsx';
 
 const EVENTS = '/api/children/2/events';
 const WEEK = `${EVENTS}?week=2026-11-09`;
@@ -13,6 +13,7 @@ const NEXT_WEEK = `${EVENTS}?week=2026-11-16`;
 const users = {
   parent: { id: 1, name: 'Ayşe Demir', role: 'parent' },
   specialist: { id: 3, name: 'Elif Kaya', role: 'specialist' },
+  child: { id: 2, name: 'Can Demir', role: 'child' },
 };
 
 function event(id, eventDate, startTime, endTime, title) {
@@ -45,7 +46,7 @@ function renderSchedule(role = 'parent', routes = {}) {
     ...routes,
   });
   render(
-    <MemoryRouter initialEntries={['/children/2/schedule']}>
+    <MemoryRouter initialEntries={[role === 'child' ? '/child/schedule' : '/children/2/schedule']}>
       <AuthProvider>
         <Routes>
           <Route
@@ -53,6 +54,14 @@ function renderSchedule(role = 'parent', routes = {}) {
             element={
               <ProtectedRoute role={['parent', 'specialist']}>
                 <WeeklySchedulePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/child/schedule"
+            element={
+              <ProtectedRoute role="child">
+                <ChildSchedulePage />
               </ProtectedRoute>
             }
           />
@@ -214,6 +223,26 @@ describe('WeeklySchedulePage', () => {
           process.env.TZ = machineTimeZone;
         }
       }
+    });
+  });
+
+  describe('the child (FR-M3-04)', () => {
+    test('sees their week under "Takvimim"', async () => {
+      renderSchedule('child');
+
+      expect(await screen.findByRole('heading', { level: 1, name: 'Takvimim' })).toBeInTheDocument();
+      expect(await screen.findAllByTestId('event')).toHaveLength(4);
+      expect(screen.getByRole('button', { name: 'Sonraki hafta' })).toBeInTheDocument();
+    });
+
+    test('asks only for the events of the logged-in child', async () => {
+      const fetchMock = renderSchedule('child', {
+        'GET /api/auth/me': { body: { id: 6, name: 'Ela Yıldız', role: 'child' } },
+        'GET /api/children/6/events?week=2026-11-09': { body: [] },
+      });
+
+      expect(await screen.findByText('Bu hafta etkinlik yok.')).toBeInTheDocument();
+      expect(fetchMock.mock.calls.map(([url]) => url)).toEqual(['/api/auth/me', '/api/children/6/events?week=2026-11-09']);
     });
   });
 });

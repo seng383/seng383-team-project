@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from './api.js';
+import { useAuth } from './AuthContext.jsx';
+import ChildNav from './ChildNav.jsx';
 import { addDays, dayAndMonth, DAY_NAMES, mondayOf, weekLabel } from './dates.js';
+import PageLayout from './PageLayout.jsx';
 
 const NO_ACCESS = 'Bu çocuğa erişim izniniz yok.';
 
@@ -32,10 +35,11 @@ function byTime(a, b) {
   return a.startTime.localeCompare(b.startTime) || a.endTime.localeCompare(b.endTime) || a.id - b.id;
 }
 
-// FR-M3-03: one child's events from Monday to Sunday. A parent or a specialist opens the child by its address
-// (/children/:childId/schedule).
+// FR-M3-03, FR-M3-04: one child's events from Monday to Sunday. A parent or a specialist opens the child by its
+// address (/children/:childId/schedule); a child has no id there and always sees their own schedule.
 export default function WeeklySchedulePage() {
-  const { childId } = useParams();
+  const { user } = useAuth();
+  const { childId = user.id } = useParams();
   const [monday, setMonday] = useState(() => mondayOf(new Date()));
   const [answer, setAnswer] = useState(null);
   const path = `/api/children/${childId}/events?week=${monday}`;
@@ -114,5 +118,15 @@ export default function WeeklySchedulePage() {
         </ol>
       )}
     </>
+  );
+}
+
+// "Takvimim": the child's own week, in the same view as for parents and specialists (FR-M3-04).
+export function ChildSchedulePage() {
+  return (
+    <PageLayout title="Takvimim">
+      <ChildNav />
+      <WeeklySchedulePage />
+    </PageLayout>
   );
 }

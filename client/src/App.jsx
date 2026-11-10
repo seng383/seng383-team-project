@@ -6,7 +6,7 @@ import LoginPage from './LoginPage.jsx';
 import ParentDashboard from './ParentDashboard.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import SpecialistChildrenPage from './SpecialistChildrenPage.jsx';
-import WeeklySchedulePage from './WeeklySchedulePage.jsx';
+import WeeklySchedulePage, { ChildSchedulePage } from './WeeklySchedulePage.jsx';
 
 function Home() {
   const { user, loading } = useAuth();
@@ -44,6 +44,14 @@ export default function App() {
             element={
               <ProtectedRoute role="child">
                 <ChildTasksPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/child/schedule"
+            element={
+              <ProtectedRoute role="child">
+                <ChildSchedulePage />
               </ProtectedRoute>
             }
           />

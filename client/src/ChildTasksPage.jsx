@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from './api.js';
+import ChildNav from './ChildNav.jsx';
 import PageLayout from './PageLayout.jsx';
 
 export const STATUS_LABELS = { not_done: 'Yapılmadı', done: 'Yapıldı' };
@@ -16,6 +17,7 @@ export default function ChildTasksPage() {
 
   return (
     <PageLayout title="Görevlerim">
+      <ChildNav />
       {!tasks && !error && <p>Görevler yükleniyor…</p>}
       {error && <p role="alert">Görevler yüklenemedi.</p>}
       {tasks && tasks.length === 0 && <p>Henüz görevin yok.</p>}

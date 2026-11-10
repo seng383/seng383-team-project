@@ -221,6 +221,24 @@ describe('App', () => {
       expect(await screen.findByTestId('event')).toHaveTextContent('09:30–10:15 Dil terapisi');
     });
 
+    test('the child moves between "Görevlerim" and "Takvimim"', async () => {
+      logInAs('child', { [`GET ${WEEK}`]: { body: [therapy] } });
+      open('/child');
+
+      fireEvent.click(await screen.findByRole('link', { name: 'Takvimim' }));
+
+      expect(await screen.findByRole('heading', { name: 'Takvimim' })).toBeInTheDocument();
+      expect(window.location.pathname).toBe('/child/schedule');
+      expect(screen.getByRole('link', { name: 'Takvimim' })).toHaveAttribute('aria-current', 'page');
+      expect(await screen.findByTestId('event')).toHaveTextContent('09:30–10:15 Dil terapisi');
+
+      fireEvent.click(screen.getByRole('link', { name: 'Görevlerim' }));
+
+      expect(await screen.findByRole('heading', { name: 'Görevlerim' })).toBeInTheDocument();
+      expect(window.location.pathname).toBe('/child');
+      expect(screen.getByRole('link', { name: 'Görevlerim' })).toHaveAttribute('aria-current', 'page');
+    });
+
     test('the child typing the schedule address of a child is denied and no data is requested', async () => {
       const fetchMock = logInAs('child');
 
@@ -228,6 +246,15 @@ describe('App', () => {
 
       expect(await screen.findByRole('alert')).toHaveTextContent('Bu sayfaya erişim izniniz yok.');
       expect(requestTo(fetchMock, '/api/children')).toBeUndefined();
+      expect(requestedEvents(fetchMock)).toHaveLength(0);
+    });
+
+    test.each(['parent', 'specialist'])('the %s typing /child/schedule is denied and no events are requested', async (role) => {
+      const fetchMock = logInAs(role);
+
+      open('/child/schedule');
+
+      expect(await screen.findByRole('alert')).toHaveTextContent('Bu sayfaya erişim izniniz yok.');
       expect(requestedEvents(fetchMock)).toHaveLength(0);
     });
 
