@@ -16,4 +16,11 @@ function parseDate(text) {
   return formatDate(date) === text ? date : null;
 }
 
-module.exports = { parseDate };
+// Takes and gives a real 'YYYY-MM-DD' date.
+function addDays(text, days) {
+  const date = parseDate(text);
+  date.setUTCDate(date.getUTCDate() + days);
+  return formatDate(date);
+}
+
+module.exports = { parseDate, addDays };

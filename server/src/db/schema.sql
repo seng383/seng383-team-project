@@ -54,3 +54,6 @@ CREATE TABLE IF NOT EXISTS events (
   end_time   TEXT    NOT NULL,
   created_at TEXT    NOT NULL DEFAULT (datetime('now'))
 );
+
+-- The week view reads the events of one child between two dates.
+CREATE INDEX IF NOT EXISTS events_child_date ON events (child_id, event_date);

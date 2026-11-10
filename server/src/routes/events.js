@@ -1,6 +1,6 @@
 const express = require('express');
 const { requireRole } = require('../middleware/auth');
-const { parseDate } = require('../dates');
+const { addDays, parseDate } = require('../dates');
 
 const TITLE_MAX_LENGTH = 200;
 // Two digits each, so that comparing two times as text compares them as times.
@@ -38,12 +38,26 @@ function findError({ title, eventDate, startTime, endTime }) {
 function eventsRoutes(db, requireAuth, requireChildAccess) {
   const router = express.Router({ mergeParams: true });
   const findEvent = db.prepare(`${SELECT_EVENT} WHERE e.id = ?`);
+  const findWeek = db.prepare(
+    `${SELECT_EVENT} WHERE e.child_id = ? AND e.event_date BETWEEN ? AND ? ORDER BY e.event_date, e.start_time, e.end_time, e.id`
+  );
   const insertEvent = db.prepare(
     'INSERT INTO events (child_id, created_by, title, event_date, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?)'
   );
 
+  // requireChildAccess lets a child through for their own id only, so the child reads just their own schedule.
   router.use(requireAuth, requireChildAccess);
 
+  // FR-M3-03: the week from the given Monday to its Sunday, in the order the events happen.
+  router.get('/', (req, res) => {
+    const monday = req.query.week;
+    if (parseDate(monday)?.getUTCDay() !== 1) {
+      return res.status(400).json({ error: 'week must be a Monday as YYYY-MM-DD' });
+    }
+    res.json(findWeek.all(Number(req.params.childId), monday, addDays(monday, 6)));
+  });
+
+  // FR-M3-04: a child may read but not add.
   // The child comes from the address and the creator from the token, never from the body.
   router.post('/', requireRole('parent', 'specialist'), express.json(), (req, res) => {
     const event = req.body ?? {};

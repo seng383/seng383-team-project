@@ -25,6 +25,7 @@ function createApp(db) {
   });
 
   app.use('/api/auth', authRoutes(db, jwtSecret, requireAuth));
+  // Ahead of the children router, which keeps the child role out of everything else under /api/children.
   app.use('/api/children/:childId/events', eventsRoutes(db, requireAuth, requireChildAccess));
   app.use('/api/children', childrenRoutes(db, requireAuth, requireChildAccess));
 
