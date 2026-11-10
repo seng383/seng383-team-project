@@ -78,4 +78,52 @@ describe('ProtectedRoute', () => {
     const link = await screen.findByRole('link', { name: 'Başlangıç ekranına dön' });
     expect(link).toHaveAttribute('href', '/child');
   });
+
+  describe('with a list of roles', () => {
+    function renderSharedPage() {
+      render(
+        <MemoryRouter initialEntries={['/children/2/schedule']}>
+          <AuthProvider>
+            <Routes>
+              <Route path="/login" element={<p>login page</p>} />
+              <Route
+                path="/children/:childId/schedule"
+                element={
+                  <ProtectedRoute role={['parent', 'specialist']}>
+                    <p>shared content</p>
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </AuthProvider>
+        </MemoryRouter>
+      );
+    }
+
+    test.each(['parent', 'specialist'])('shows the page to the listed role %s', async (role) => {
+      logInAs(role);
+
+      renderSharedPage();
+
+      expect(await screen.findByText('shared content')).toBeInTheDocument();
+    });
+
+    test('denies a role that is not listed and offers the way back', async () => {
+      logInAs('child');
+
+      renderSharedPage();
+
+      expect(await screen.findByRole('alert')).toHaveTextContent('Bu sayfaya erişim izniniz yok.');
+      expect(screen.queryByText('shared content')).not.toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Başlangıç ekranına dön' })).toHaveAttribute('href', '/child');
+    });
+
+    test('sends a visitor without a token to the login page', () => {
+      mockApi({});
+
+      renderSharedPage();
+
+      expect(screen.getByText('login page')).toBeInTheDocument();
+    });
+  });
 });
