@@ -1,10 +1,12 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider, START_PATHS, useAuth } from './AuthContext.jsx';
+import ChildArea from './ChildArea.jsx';
 import ChildTasksPage from './ChildTasksPage.jsx';
 import LoginPage from './LoginPage.jsx';
 import ParentDashboard from './ParentDashboard.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import SpecialistChildrenPage from './SpecialistChildrenPage.jsx';
+import WeeklySchedulePage from './WeeklySchedulePage.jsx';
 
 function Home() {
   const { user, loading } = useAuth();
@@ -45,6 +47,17 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          {/* The pages about one child: one route here for each tab in ChildTabs.jsx. */}
+          <Route
+            path="/children/:childId"
+            element={
+              <ProtectedRoute role={['parent', 'specialist']}>
+                <ChildArea />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="schedule" element={<WeeklySchedulePage />} />
+          </Route>
           <Route path="*" element={<Home />} />
         </Routes>
       </AuthProvider>

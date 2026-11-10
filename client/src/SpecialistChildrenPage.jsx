@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from './api.js';
 import Avatar from './Avatar.jsx';
 import { STATUS_LABELS } from './ChildTasksPage.jsx';
@@ -6,6 +7,15 @@ import PageLayout from './PageLayout.jsx';
 
 const rowStyle = { padding: 16, marginBottom: 12, background: '#f2f2f2', border: '1px solid #999999', borderRadius: 6 };
 const viewButtonStyle = { padding: 8, color: '#ffffff', background: '#3b6ea5', border: 'none', borderRadius: 4, fontWeight: 'bold' };
+const scheduleLinkStyle = {
+  padding: 8,
+  color: '#333333',
+  background: '#ffffff',
+  border: '1px solid #999999',
+  borderRadius: 4,
+  fontSize: 13,
+  textDecoration: 'none',
+};
 const errorStyle = { color: '#b3261e' };
 
 // SQLite keeps the time in UTC as "YYYY-MM-DD HH:MM:SS".
@@ -40,6 +50,9 @@ function ChildRow({ child, onDenied }) {
             Ebeveyn: {child.parentName} · Bağlantı tarihi: {formatDate(child.linkedAt)}
           </div>
         </div>
+        <Link to={`/children/${child.id}/schedule`} style={scheduleLinkStyle}>
+          Haftalık program
+        </Link>
         <button type="button" onClick={handleView} style={viewButtonStyle}>
           Görüntüle
         </button>

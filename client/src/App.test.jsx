@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { getToken, setToken } from './api.js';
 import App from './App.jsx';
 import { mockApi, requestTo } from './testUtils.js';
@@ -176,6 +176,68 @@ describe('App', () => {
       expect(await screen.findByRole('heading', { name: 'Giriş yap' })).toBeInTheDocument();
       expect(window.location.pathname).toBe('/login');
       expect(getToken()).toBeNull();
+    });
+  });
+
+  describe('weekly schedule (FR-M3-03, FR-M3-04)', () => {
+    const WEEK = '/api/children/2/events?week=2026-11-09';
+    const can = { id: 2, name: 'Can Demir', parentName: 'Ayşe Demir', linkedAt: '2026-10-12 09:00:00' };
+    const therapy = {
+      id: 11,
+      childId: 2,
+      title: 'Dil terapisi',
+      eventDate: '2026-11-09',
+      startTime: '09:30',
+      endTime: '10:15',
+      createdBy: 1,
+      createdByName: 'Ayşe Demir',
+    };
+
+    function requestedEvents(fetchMock) {
+      return fetchMock.mock.calls.filter(([url]) => url.includes('/events'));
+    }
+
+    // Wednesday 11 November 2026, so the schedule opens on the week of 9 November.
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(new Date(2026, 10, 11, 10, 0));
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    test.each([
+      ['parent', '/parent', { 'GET /api/children/2/specialists': { body: [] } }],
+      ['specialist', '/specialist', {}],
+    ])('the %s opens the schedule of a child from the start screen %s', async (role, start, routes) => {
+      logInAs(role, { 'GET /api/children': { body: [can] }, [`GET ${WEEK}`]: { body: [therapy] }, ...routes });
+      open(start);
+
+      fireEvent.click(await screen.findByRole('link', { name: 'Haftalık program' }));
+
+      expect(await screen.findByRole('heading', { level: 1, name: 'Can Demir' })).toBeInTheDocument();
+      expect(window.location.pathname).toBe('/children/2/schedule');
+      expect(await screen.findByTestId('event')).toHaveTextContent('09:30–10:15 Dil terapisi');
+    });
+
+    test('the child typing the schedule address of a child is denied and no data is requested', async () => {
+      const fetchMock = logInAs('child');
+
+      open('/children/2/schedule');
+
+      expect(await screen.findByRole('alert')).toHaveTextContent('Bu sayfaya erişim izniniz yok.');
+      expect(requestTo(fetchMock, '/api/children')).toBeUndefined();
+      expect(requestedEvents(fetchMock)).toHaveLength(0);
+    });
+
+    test('a specialist typing the address of a child not linked to them sees access denied and no events', async () => {
+      const fetchMock = logInAs('specialist', { 'GET /api/children': { body: [] } });
+
+      open('/children/2/schedule');
+
+      expect(await screen.findByRole('alert')).toHaveTextContent('Bu çocuğa erişim izniniz yok.');
+      expect(requestedEvents(fetchMock)).toHaveLength(0);
     });
   });
 });
