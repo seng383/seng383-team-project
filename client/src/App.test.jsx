@@ -219,9 +219,10 @@ describe('App', () => {
       expect(await screen.findByRole('heading', { level: 1, name: 'Can Demir' })).toBeInTheDocument();
       expect(window.location.pathname).toBe('/children/2/schedule');
       expect(await screen.findByTestId('event')).toHaveTextContent('09:30–10:15 Dil terapisi');
+      expect(screen.getByRole('button', { name: 'Etkinlik ekle' })).toBeInTheDocument();
     });
 
-    test('the child moves between "Görevlerim" and "Takvimim"', async () => {
+    test('the child moves between "Görevlerim" and "Takvimim" and cannot add an event', async () => {
       logInAs('child', { [`GET ${WEEK}`]: { body: [therapy] } });
       open('/child');
 
@@ -231,6 +232,7 @@ describe('App', () => {
       expect(window.location.pathname).toBe('/child/schedule');
       expect(screen.getByRole('link', { name: 'Takvimim' })).toHaveAttribute('aria-current', 'page');
       expect(await screen.findByTestId('event')).toHaveTextContent('09:30–10:15 Dil terapisi');
+      expect(screen.queryByRole('button', { name: 'Etkinlik ekle' })).not.toBeInTheDocument();
 
       fireEvent.click(screen.getByRole('link', { name: 'Görevlerim' }));
 

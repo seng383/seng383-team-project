@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { addDays, dayAndMonth, mondayOf, weekLabel } from './dates.js';
+import { addDays, dayAndMonth, fullDate, mondayOf, weekLabel } from './dates.js';
 
 // Runs in Turkish time whatever the machine uses (CI runs in UTC), so a slip to UTC would show here.
 const machineTimeZone = process.env.TZ;
@@ -67,4 +67,8 @@ describe('weekLabel', () => {
 
 test('dayAndMonth writes a date as under the day names', () => {
   expect(dayAndMonth('2026-11-01')).toBe('01.11');
+});
+
+test('fullDate writes a date the Turkish way', () => {
+  expect(fullDate('2026-11-01')).toBe('01.11.2026');
 });

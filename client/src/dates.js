@@ -41,3 +41,9 @@ export function dayAndMonth(isoDate) {
   const [, month, day] = isoDate.split('-');
   return `${day}.${month}`;
 }
+
+// "09.11.2026".
+export function fullDate(isoDate) {
+  const [year, month, day] = isoDate.split('-');
+  return `${day}.${month}.${year}`;
+}

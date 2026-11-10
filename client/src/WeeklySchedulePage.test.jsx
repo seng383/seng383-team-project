@@ -92,6 +92,22 @@ async function eventsByDay() {
   return days.map((day) => within(day).queryAllByTestId('event').map((item) => item.textContent));
 }
 
+async function openForm() {
+  fireEvent.click(await screen.findByRole('button', { name: 'Etkinlik ekle' }));
+}
+
+function fillAndSave({ title = 'Kütüphane ziyareti', eventDate = '2026-11-09', startTime = '12:00', endTime = '13:00' } = {}) {
+  fireEvent.change(screen.getByLabelText('Başlık'), { target: { value: title } });
+  fireEvent.change(screen.getByLabelText('Tarih'), { target: { value: eventDate } });
+  fireEvent.change(screen.getByLabelText('Başlangıç'), { target: { value: startTime } });
+  fireEvent.change(screen.getByLabelText('Bitiş'), { target: { value: endTime } });
+  fireEvent.click(screen.getByRole('button', { name: 'Kaydet' }));
+}
+
+function posts(fetchMock) {
+  return fetchMock.mock.calls.filter(([, options]) => options.method === 'POST');
+}
+
 describe('WeeklySchedulePage', () => {
   describe('week view (FR-M3-03)', () => {
     test('opens on the current week and shows its days from Monday to Sunday with their dates', async () => {
@@ -226,13 +242,128 @@ describe('WeeklySchedulePage', () => {
     });
   });
 
+  describe('adding an event (FR-M3-01, FR-M3-02)', () => {
+    test.each(['parent', 'specialist'])('the %s opens the form with "Etkinlik ekle" and closes it with "Vazgeç"', async (role) => {
+      const fetchMock = renderSchedule(role);
+      expect(screen.queryByRole('heading', { name: 'Yeni etkinlik' })).not.toBeInTheDocument();
+
+      await openForm();
+      expect(screen.getByRole('heading', { name: 'Yeni etkinlik' })).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Vazgeç' }));
+
+      expect(screen.queryByRole('heading', { name: 'Yeni etkinlik' })).not.toBeInTheDocument();
+      expect(posts(fetchMock)).toHaveLength(0);
+    });
+
+    test('sends the event and shows it in its day in time order, without loading the week again (FR-M3-01)', async () => {
+      const fetchMock = renderSchedule('parent', {
+        [`GET ${WEEK}`]: {
+          body: [event(11, '2026-11-09', '09:30', '10:15', 'Dil terapisi'), event(15, '2026-11-09', '16:00', '17:00', 'Yüzme')],
+        },
+        [`POST ${EVENTS}`]: { status: 201, body: event(30, '2026-11-09', '12:00', '13:00', 'Kütüphane ziyareti') },
+      });
+      await openForm();
+
+      fillAndSave();
+
+      expect(await screen.findByRole('status')).toHaveTextContent('Etkinlik kaydedildi: 09.11.2026, 12:00–13:00.');
+      expect((await eventsByDay())[0]).toEqual([
+        '09:30–10:15 Dil terapisi',
+        '12:00–13:00 Kütüphane ziyareti',
+        '16:00–17:00 Yüzme',
+      ]);
+      expect(JSON.parse(requestTo(fetchMock, EVENTS).body)).toEqual({
+        title: 'Kütüphane ziyareti',
+        eventDate: '2026-11-09',
+        startTime: '12:00',
+        endTime: '13:00',
+      });
+      expect(fetchMock.mock.calls.filter(([url]) => url === WEEK)).toHaveLength(1);
+      expect(screen.queryByRole('heading', { name: 'Yeni etkinlik' })).not.toBeInTheDocument();
+    });
+
+    test('saves an event of another week without putting it into the week on the screen', async () => {
+      renderSchedule('parent', {
+        [`POST ${EVENTS}`]: { status: 201, body: event(31, '2026-11-20', '10:00', '11:00', 'Bayram ziyareti') },
+      });
+      await openForm();
+
+      fillAndSave({ title: 'Bayram ziyareti', eventDate: '2026-11-20', startTime: '10:00', endTime: '11:00' });
+
+      expect(await screen.findByRole('status')).toHaveTextContent('Etkinlik kaydedildi: 20.11.2026, 10:00–11:00.');
+      expect(screen.getAllByTestId('event')).toHaveLength(4);
+      expect(screen.queryByText('Bayram ziyareti')).not.toBeInTheDocument();
+    });
+
+    test('takes an end time equal to the start time, as the API does', async () => {
+      const fetchMock = renderSchedule('parent', {
+        [`POST ${EVENTS}`]: { status: 201, body: event(32, '2026-11-10', '15:00', '15:00', 'Telefon görüşmesi') },
+      });
+      await openForm();
+
+      fillAndSave({ title: 'Telefon görüşmesi', eventDate: '2026-11-10', startTime: '15:00', endTime: '15:00' });
+
+      expect((await eventsByDay())[1]).toEqual(['15:00–15:00 Telefon görüşmesi']);
+      expect(posts(fetchMock)).toHaveLength(1);
+    });
+
+    test.each([
+      ['no title', { title: '' }, 'Başlık boş olamaz.'],
+      ['a title of spaces only', { title: '   ' }, 'Başlık boş olamaz.'],
+      ['no date', { eventDate: '' }, 'Tarih boş olamaz.'],
+      ['no start time', { startTime: '' }, 'Başlangıç ve bitiş saati boş olamaz.'],
+      ['no end time', { endTime: '' }, 'Başlangıç ve bitiş saati boş olamaz.'],
+      ['an end before the start', { startTime: '15:00', endTime: '14:30' }, 'Bitiş saati başlangıç saatinden önce olamaz.'],
+    ])('shows an error for %s and sends nothing (FR-M3-02)', async (_, values, message) => {
+      const fetchMock = renderSchedule();
+      await openForm();
+
+      fillAndSave(values);
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(message);
+      expect(posts(fetchMock)).toHaveLength(0);
+      expect(screen.getByRole('heading', { name: 'Yeni etkinlik' })).toBeInTheDocument();
+    });
+
+    test('keeps what was typed after an error, so only the wrong field needs fixing', async () => {
+      renderSchedule();
+      await openForm();
+
+      fillAndSave({ startTime: '15:00', endTime: '14:30' });
+
+      expect(await screen.findByRole('alert')).toBeInTheDocument();
+      expect(screen.getByLabelText('Başlık')).toHaveValue('Kütüphane ziyareti');
+      expect(screen.getByLabelText('Tarih')).toHaveValue('2026-11-09');
+      expect(screen.getByLabelText('Bitiş')).toHaveValue('14:30');
+    });
+
+    test.each([
+      [400, 'Etkinlik kaydedilemedi. Lütfen bilgileri kontrol edin.'],
+      [403, 'Bu çocuğa erişim izniniz yok.'],
+      [500, 'Etkinlik kaydedilemedi. Lütfen tekrar deneyin.'],
+    ])('shows a Turkish error and keeps the form when the API answers %i (FR-M3-02)', async (status, message) => {
+      renderSchedule('parent', { [`POST ${EVENTS}`]: { status } });
+      await openForm();
+
+      fillAndSave();
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(message);
+      expect(screen.getByLabelText('Başlık')).toHaveValue('Kütüphane ziyareti');
+      expect(screen.getByRole('button', { name: 'Kaydet' })).toBeEnabled();
+      expect(screen.getAllByTestId('event')).toHaveLength(4);
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    });
+  });
+
   describe('the child (FR-M3-04)', () => {
-    test('sees their week under "Takvimim"', async () => {
+    test('sees their week under "Takvimim" and no way to add an event', async () => {
       renderSchedule('child');
 
       expect(await screen.findByRole('heading', { level: 1, name: 'Takvimim' })).toBeInTheDocument();
       expect(await screen.findAllByTestId('event')).toHaveLength(4);
       expect(screen.getByRole('button', { name: 'Sonraki hafta' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Etkinlik ekle' })).not.toBeInTheDocument();
+      expect(screen.queryByText('Yeni etkinlik')).not.toBeInTheDocument();
     });
 
     test('asks only for the events of the logged-in child', async () => {
