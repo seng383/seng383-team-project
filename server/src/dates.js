@@ -23,4 +23,11 @@ function addDays(text, days) {
   return formatDate(date);
 }
 
-module.exports = { parseDate, addDays };
+// The Monday of the week that `now` falls in. A week runs Monday to Sunday in local time,
+// so the local calendar day counts here: in Turkey the first hours of a Monday are still Sunday in UTC.
+function mondayOf(now) {
+  const today = formatDate(new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())));
+  return addDays(today, -((now.getDay() + 6) % 7));
+}
+
+module.exports = { parseDate, addDays, mondayOf };

@@ -15,6 +15,8 @@ describe('GET /api/children/:childId/events', () => {
   beforeEach(() => {
     db = openDatabase(':memory:');
     seed(db);
+    // The seed fills the week it runs in; these tests place their own events in fixed weeks.
+    db.exec('DELETE FROM events');
     app = createApp(db);
     childId = idOf('child@demo.test');
     parentId = idOf('parent@demo.test');
