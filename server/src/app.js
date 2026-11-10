@@ -4,16 +4,13 @@ const { createChildAccess } = require('./middleware/childAccess');
 const { authRoutes } = require('./routes/auth');
 const { childrenRoutes } = require('./routes/children');
 const { eventsRoutes } = require('./routes/events');
+const { tasksRoutes } = require('./routes/tasks');
 
 // Builds the Express app around a database connection, so tests can pass an in-memory database.
 function createApp(db) {
   const jwtSecret = loadJwtSecret();
   const requireAuth = createRequireAuth(db, jwtSecret);
   const { canAccessChild, requireChildAccess } = createChildAccess(db);
-  const findTasks = db.prepare(
-    'SELECT id, child_id AS childId, title, description, development_area AS developmentArea, ' +
-      'due_date AS dueDate, status FROM tasks WHERE child_id = ? ORDER BY id'
-  );
 
   // Each route that reads a body parses it after its checks, so a bad body cannot replace their 401 or 403.
   const app = express();
@@ -28,20 +25,7 @@ function createApp(db) {
   // Ahead of the children router, which keeps the child role out of everything else under /api/children.
   app.use('/api/children/:childId/events', eventsRoutes(db, requireAuth, requireChildAccess));
   app.use('/api/children', childrenRoutes(db, requireAuth, requireChildAccess));
-
-  // A child always gets their own tasks, whatever childId they send.
-  app.get('/api/tasks', requireAuth, (req, res) => {
-    if (req.user.role === 'child') {
-      return res.json(findTasks.all(req.user.id));
-    }
-    if (!req.query.childId) {
-      return res.status(400).json({ error: 'childId is required' });
-    }
-    if (!canAccessChild(req.user, req.query.childId)) {
-      return res.status(403).json({ error: 'Forbidden' });
-    }
-    res.json(findTasks.all(Number(req.query.childId)));
-  });
+  app.use('/api/tasks', tasksRoutes(db, requireAuth, canAccessChild));
 
   app.use('/api', (req, res) => {
     res.status(404).json({ error: 'Not found' });
