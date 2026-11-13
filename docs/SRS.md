@@ -1,79 +1,26 @@
 # Software Requirements Specification (SRS)
 
-**AI-Assisted Child Development Platform**
-
-| | |
-|---|---|
-| Course | SENG 383 – Software Project III, Fall 2026 |
-| Team | 383-G9 |
-| Repository | https://github.com/seng383/seng383-team-project |
-| Prepared by | Batın Abiş, Mert Akdemir, Burak Tunahan Mazman |
-| Version | 0.1 (draft, Week 4) |
-| Status | Draft – to be reviewed with the test and quality team |
-
-### Revision history
-
-| Version | Date | Description | Authors |
-|---|---|---|---|
-| 0.1 | 25.10.2026 | First draft: user stories and acceptance criteria for M1–M8, roles, constraints and non-functional requirements. | 383-G9 |
+**Team name:** 383-G9 (Batın Abiş, Mert Akdemir, Burak Tunahan Mazman)  
+**Version:** ☒ First version (Week 6) ☐ Final (Week 10)  
+**Last updated:** 2026-10-31
 
 ---
 
 ## 1. Introduction
 
-### 1.1 Purpose
+**Purpose of the system:**
 
-This document describes what our platform has to do in release 1.0. We use it as the basis for the design document, the Jira backlog and the tests. The SENG 440 test and quality team uses the acceptance criteria in Section 3 to write their tests, so every criterion is written to be checkable through the user interface or the API.
+The AI-Assisted Child Development Platform is a web application that gives a child's parent and specialists one shared weekly schedule, one task list and one record of observations, while the child sees their own schedule and tasks. An AI component summarizes each week's records for the reader's role, with one version for parents and one for specialists. The AI only supports decisions; the user always makes the decision.
 
-### 1.2 Problem and scope
+**Users of the system:**
 
-A child's development is followed by several people at once: parents, teachers, psychologists, doctors, special education teachers and coaches. Today each of them keeps separate notes, gives separate tasks and sees only part of the picture.
-
-Our product is a web application that brings them together around one shared weekly schedule, one task list and one record of observations. An AI component summarizes the week's records for each reader according to their role. The AI only supports decisions. Its output is always shown as a suggestion, together with the records it is based on, and a person decides what to do with it.
-
-**In scope (release 1.0):** the eight mandatory requirements M1–M8 in Section 3.
-
-**Optional extensions** (only after M1–M8 pass the test team's tests): monthly views, recurring tasks, edit history, per-document sharing, AI task suggestions, notifications.
-
-**Out of scope:** field-level permissions, email invitations, an admin panel, mobile apps, cloud deployment, microservices and Docker.
-
-### 1.3 Definitions
-
-| Term | Meaning |
+| User type | Description |
 |---|---|
-| Parent | User who owns a child's data, sees all of the child's records and links specialists to the child. |
-| Specialist | Teacher, psychologist, doctor, special education teacher or coach. Works only with the children they are linked to. |
-| Child | User who sees only their own tasks and schedule. |
-| Linked specialist | A specialist that the parent has linked to a specific child (M2). |
-| Record | Any schedule event, task, specialist entry or document that belongs to a child. |
-| Specialist entry | A dated observation written by a linked specialist (M5). |
-| Development area | Category of a task, used for statistics: Language, Motor skills, Social-emotional, Cognitive, Self-care. |
-| Week | Monday 00:00 to Sunday 23:59, local time. |
-| Mock mode | Setting in which the AI module returns a fixed response for each reader role (parent or specialist) instead of calling the AI provider. Used in tests and CI. |
+| Parent | Sees all records of their own child and links specialists to the child or unlinks them. |
+| Specialist | Teacher, psychologist, doctor, special education teacher or coach. Works only with the children they are currently linked to. |
+| Child | Sees only their own schedule and tasks, and marks their own tasks as done. |
 
-### 1.4 References
-
-1. SENG 383 Term Project Assignment: AI-Assisted Child Development Platform, Fall 2026.
-2. Term Project – Student Guide (WebOnline).
-3. Project Management Plan: `docs/PMP.md` in this repository.
-
----
-
-## 2. Overall description
-
-### 2.1 Product perspective
-
-The product is a new, self-contained web application. It runs on the developer's or tester's own computer by following the README; there is no cloud deployment. It has three layers:
-
-- **Frontend:** React (Vite) single-page application.
-- **Backend:** Node.js + Express REST API with JWT authentication.
-- **Database:** SQLite, filled with synthetic data by a seed script.
-
-The only external service is the AI provider, **GitHub Models**, which the backend calls through one AI module. In tests and CI the module runs in mock mode, so no network access or API key is needed there.
-
-### 2.2 User roles and access rules
-
-The role comes from the user's account; the user does not choose it at login.
+**Access rules:**
 
 | What | Parent | Linked specialist | Unlinked specialist | Child |
 |---|---|---|---|---|
@@ -82,211 +29,191 @@ The role comes from the user's account; the user does not choose it at login.
 | Specialist entries | View | View, add, edit own | No access | No access |
 | Documents | View, upload, download | View, upload, download | No access | No access |
 | Weekly statistics | View | View | No access | No access |
-| AI weekly summary | View (parent version) | View (specialist version) | No access | No access |
+| AI weekly summary | View, rate (parent version) | View, rate (specialist version) | No access | No access |
 | Link / unlink specialists | Yes | No | No | No |
 
-These rules are enforced by the backend for every request. Hiding a button in the user interface is not enough.
+The backend enforces these rules on every request; hiding a button in the user interface is not enough.
 
-### 2.3 Constraints
-
-| ID | Constraint |
-|---|---|
-| C-1 | Technology: React (Vite), Node.js + Express, SQLite, JWT authentication. |
-| C-2 | Tests: Jest + Supertest (backend), Vitest (frontend), Playwright (end-to-end). CI with GitHub Actions. Work tracking in Jira. |
-| C-3 | AI: GitHub Models, accessed only through a single backend module that has a mandatory mock mode for tests and CI. |
-| C-4 | Data: only synthetic data created by the seed script. No real personal data at any stage. |
-| C-5 | Safety: the AI never makes decisions, never suggests a diagnosis or treatment, and receives only data the reader is allowed to see. |
-| C-6 | Running: the application runs locally by following the README. No cloud deployment, no Docker. |
-
-### 2.4 Assumptions and dependencies
-
-- A-1: User accounts (parents, children, specialists) are created by the seed script. A sign-up screen is not part of release 1.0. *(To confirm with the test team.)*
-- A-2: Each child has exactly one parent account in release 1.0. A parent can have more than one child.
-- A-3: A GitHub account with access to GitHub Models is available for the live AI mode. Its token is kept in a local `.env` file and never committed.
-- A-4: The interface text is in Turkish, as in the example screens of the assignment. This document is in English.
+**Note:** Accounts are created by the seed script (there is no sign-up screen in v1.0), each child has exactly one parent account, and only synthetic data is used. The interface text is in Turkish, and a week runs from Monday 00:00 to Sunday 23:59 (local time). A record is a schedule event, task, specialist entry or document of the child. Quoted labels such as "done", "not done", "edited", "AI-generated", "helpful" and "incorrect" stand for their Turkish interface text; only the note in FR-M8-05 is quoted word for word.
 
 ---
 
-## 3. Functional requirements
+## 2. Functional Requirements
 
-Each requirement below is written as one or more user stories with acceptance criteria (AC) in *Given / When / Then* form. "The API rejects the request" means it responds with an error status (401 when not logged in, 403 when not allowed) and returns no data about the child.
+When a requirement says that the system rejects a request or denies access, the API answers 401 if the user is not logged in and 403 if the user is not allowed, and returns no data about the child.
 
-All eight requirements are mandatory. The release in brackets after each requirement follows the assignment: M1–M4 in v0.1, M5–M8 in v0.2.
+### M1 – Login and roles
 
-### M1 – Login and roles (v0.1)
-
-**US-1.1** As a registered user, I want to log in with my email and password so that I can reach the screens for my role.
-
-- AC1. Given a seeded account and the correct password, when the user logs in, then they are taken to the start screen of their role (parent dashboard, specialist's children list, or the child's task screen).
-- AC2. Given a wrong password or an unknown email, when the user tries to log in, then an error message is shown and no session is created. The message does not say which of the two was wrong.
-- AC3. Given a logged-in user, when they log out, then protected pages and API endpoints can no longer be used without logging in again.
-
-**US-1.2** As any user, I want to see only the screens of my own role so that I do not reach data that is not meant for me.
-
-- AC1. Given an account of any role, when the user opens a page of another role by typing its URL (for example a child opening the parent dashboard, or a specialist opening the parent's linked-specialists page), then access is denied.
-- AC2. Given any role, when a request is sent to an API endpoint of another role, then the API rejects it.
-- AC3. Given no valid token, when any protected API endpoint is called, then the API rejects it with 401.
-
-### M2 – Linking specialists (v0.1)
-
-**US-2.1** As a parent, I want to link a registered specialist to my child by email so that they can work with my child's records.
-
-- AC1. Given the email of a registered specialist, when the parent links them to the child, then the specialist appears in the child's list of linked specialists with name and type.
-- AC2. Given an email that does not belong to a registered specialist, when the parent tries to link it, then an error message is shown and nothing is linked.
-- AC3. Given a specialist who is already linked, when the parent links the same email again, then no duplicate is created.
-
-**US-2.2** As a parent, I want to unlink a specialist so that they no longer see my child's data.
-
-- AC1. Given a linked specialist, when the parent unlinks them and confirms, then the specialist is removed from the list.
-- AC2. Given an unlinked specialist, when they send any request about the child (schedule, tasks, entries, documents, statistics, AI summary), then the API rejects it.
-
-**US-2.3** As a specialist, I want to see the list of children I am linked to so that I can open their profiles.
-
-- AC1. Given a specialist linked to two children, when they open their start screen, then exactly those two children are listed.
-
-### M3 – Weekly schedule (v0.1)
-
-**US-3.1** As a parent or linked specialist, I want to add an event to the child's schedule so that everyone involved sees the same plan.
-
-- AC1. Given a parent or linked specialist, when they add an event with title, date, start time and end time, then it appears in the weekly view of that week.
-- AC2. Given an event whose end time is before its start time, or a missing title or date, when it is saved, then an error is shown and the event is not created.
-
-**US-3.2** As a parent, linked specialist or child, I want to see the events of a selected week so that I know what is planned.
-
-- AC1. Given events in several weeks, when a week is selected, then only the events of that week are listed, ordered by day and time.
-- AC2. Given a child account, when the child opens the schedule, then only their own events are shown and there is no option to add events.
-
-### M4 – Tasks (v0.1)
-
-**US-4.1** As a parent or linked specialist, I want to assign a task to the child so that the child knows what to do.
-
-- AC1. Given a parent or linked specialist, when they create a task with title, description, development area and due date, then the task appears in the child's task list with status "not done".
-- AC2. Given a missing title, development area or due date, when the task is saved, then an error is shown and the task is not created.
-
-**US-4.2** As a child, I want to mark a task as done so that the adults can see my progress.
-
-- AC1. Given a task assigned to the child, when the child marks it done, then its status changes to "done".
-- AC2. Given a task of another child, when a child tries to change it through the API, then the API rejects it.
-
-**US-4.3** As the person who assigned a task, I want to see its status so that I can follow up.
-
-- AC1. Given tasks assigned by a user, when that user opens their task list, then each task shows its current status ("done" / "not done").
-
-### M5 – Specialist entries (v0.2)
-
-**US-5.1** As a linked specialist, I want to add a dated observation about the child so that the child's development is recorded over time.
-
-- AC1. Given a linked specialist, when they save an entry with a date and text, then the entry appears in the child's entries with the author's name and the date.
-- AC2. Given an empty text, when the entry is saved, then an error is shown and nothing is saved.
-
-**US-5.2** As the specialist who wrote an entry, I want to edit it so that I can correct mistakes.
-
-- AC1. Given an entry written by the specialist, when they edit and save it, then the new text is shown and the entry is marked "edited".
-- AC2. Given an entry written by another specialist, when a specialist tries to edit it, then the API rejects it.
-
-**US-5.3** As a parent or linked specialist, I want to read all entries about the child.
-
-- AC1. Given entries written by two different specialists, when the parent or a linked specialist opens the entries, then both are listed, newest first.
-- AC2. Given a child account, when entries are requested through the user interface or the API, then access is denied.
-
-### M6 – Documents (v0.2)
-
-**US-6.1** As a parent or linked specialist, I want to upload a PDF or image so that important documents are kept in one place.
-
-- AC1. Given a PDF, JPEG or PNG file of at most 10 MB, when it is uploaded, then it appears in the document list with name, type, uploader and upload date.
-- AC2. Given a file of another type or larger than 10 MB, when it is uploaded, then an error is shown and the file is not stored.
-
-**US-6.2** As a parent or linked specialist, I want to view and download the child's documents.
-
-- AC1. Given a listed document, when the user selects it, then it can be viewed in the browser and downloaded with its original name.
-- AC2. Given a child account or an unlinked specialist, when the document list or a document file is requested, then access is denied.
-
-### M7 – Weekly statistics (v0.2)
-
-**US-7.1** As a parent or linked specialist, I want to see how many of the child's tasks were completed in a selected week so that I can follow progress.
-
-- AC1. Given tasks due in the selected week, when the statistics are opened, then the completion rate is shown as done tasks / all tasks of that week, as a percentage.
-- AC2. Given tasks in several development areas, when the statistics are opened, then a separate completion rate is shown for each area that has tasks in that week.
-- AC3. Given a week without tasks, when it is selected, then the screen says there are no tasks instead of showing 0 %.
-
-### M8 – Role-based AI summary (v0.2)
-
-**US-8.1** As a parent, I want a short AI summary of my child's week so that I get an overview without reading every record.
-
-**US-8.2** As a linked specialist, I want an AI summary of the child's week written for a specialist so that I can prepare for my next session.
-
-Acceptance criteria for US-8.1 and US-8.2:
-
-- AC1. Given the week's records, when the summary is requested, then the backend builds the prompt only from records that the reader is allowed to see (Section 2.2), and uses a different prompt for parents and for specialists.
-- AC2. Given a generated summary, when it is shown, then it carries the label "AI-generated" and lists the records it is based on, each with a link to the record.
-- AC3. Given a summary request, when the backend builds the prompt, then the prompt always contains the fixed instruction not to give a diagnosis, not to suggest a treatment and not to make decisions for the reader (constraint C-5).
-- AC3b. Given a generated summary, when it is shown, then the fixed note "Bu bir yapay zekâ önerisidir; karar size aittir." is displayed with it.
-- AC4. Given a week without records, when the summary is requested, then the system says there is nothing to summarize and does not call the AI provider.
-- AC5. Given that the AI provider is unreachable or returns an error, when the summary is requested, then a clear message is shown and the rest of the page keeps working.
-- AC6. Given mock mode is on (tests and CI), when the summary is requested, then the AI module returns a fixed response for the reader's role (always the same text for parents, always the same text for specialists) and makes no network call.
-
-**US-8.3** As a parent or specialist, I want to mark a summary as helpful or incorrect so that the team can see how useful the summaries are. *(Required for the parent's summary in example screen A.2.)*
-
-- AC1. Given a shown summary, when the user selects "helpful" or "incorrect", then the choice is saved for that summary and shown as selected.
-
----
-
-## 4. Non-functional requirements
-
-| ID | Requirement | How we check it |
+| ID | Requirement | Priority |
 |---|---|---|
-| NFR-1 | Passwords are stored only as bcrypt hashes, never as plain text. | Inspect the database after seeding. |
-| NFR-2 | Every protected endpoint checks the token, the role and, for child data, the parent/link relation. | API tests for each endpoint with parent, linked specialist, unlinked specialist and child accounts. |
-| NFR-3 | The AI module sends the provider only the records the reader may see, and nothing else (no emails, no passwords). | Unit test of the prompt builder in mock mode. |
-| NFR-4 | Secrets (JWT secret, GitHub token) are read from `.env` and are not in the repository. | Code review; `.env` is in `.gitignore`, `.env.example` is committed. |
-| NFR-5 | A new team member can install, seed and start the application by following the README on Windows, macOS or Linux with Node.js 22 or newer. | The test team installs from the README before each release. |
-| NFR-6 | With the seed data, pages load in under 2 seconds on a normal laptop. An AI summary in live mode shows a loading state and appears within 15 seconds, or an error message. | Manual check during demos; Playwright timing for the main pages. |
-| NFR-7 | Branch coverage is at least 40 % at v0.2 and at least 60 % at v1.0. | Coverage report in CI. |
-| NFR-8 | CI runs the backend, frontend and end-to-end tests on every pull request; a pull request is merged only after review and passing CI. | GitHub Actions and pull request history. |
-| NFR-9 | Only synthetic data is used. The seed script creates all users and records. | Code review of the seed script. |
+| FR-M1-01 | The system shall let a registered user log in with email and password and open the start screen of the user's role: the parent dashboard, the specialist's list of children or the child's task screen. | Must |
+| FR-M1-02 | The system shall show one error message for a wrong password or an unknown email, without saying which of the two was wrong, and shall not start a session. | Must |
+| FR-M1-03 | The system shall let a logged-in user log out; after that, protected pages and API endpoints shall require a new login. | Must |
+| FR-M1-04 | The system shall deny a user access to the pages and API endpoints of other roles, also when the page address is typed directly (API status 403). | Must |
+| FR-M1-05 | The system shall reject every call to a protected API endpoint without a valid token with status 401. | Must |
 
----
+### M2 – Linking specialists
 
-## 5. Data requirements (draft)
-
-The final data model will be in the design document (Week 6). The main entities are:
-
-- **User:** id, name, email, password hash, role (parent, specialist, child), specialist type (for specialists).
-- **Child profile:** link between a child user and their parent.
-- **Specialist link:** child, specialist, link date.
-- **Event:** child, title, date, start time, end time, created by.
-- **Task:** child, title, description, development area, due date, status, assigned by, completed at.
-- **Specialist entry:** child, author, date, text, created at, edited flag / edited at.
-- **Document:** child, original file name, type, size, stored path, uploaded by, upload date.
-- **AI summary:** child, week, reader role, text, source record ids, created at, feedback.
-
----
-
-## 6. Release plan and traceability
-
-| Req. | User stories | Release | Planned end-to-end test |
-|---|---|---|---|
-| M1 | US-1.1, US-1.2 | v0.1 | Each role logs in and lands on its own start screen; no role can open another role's pages. |
-| M2 | US-2.1 – US-2.3 | v0.1 | Parent links and unlinks a specialist; unlinked specialist gets an error. |
-| M3 | US-3.1, US-3.2 | v0.1 | Specialist adds an event; parent and child see it in the weekly view. |
-| M4 | US-4.1 – US-4.3 | v0.1 | Parent assigns a task; child marks it done; parent sees "done". |
-| M5 | US-5.1 – US-5.3 | v0.2 | Specialist adds and edits an entry; entry shows "edited"; child cannot see it. |
-| M6 | US-6.1, US-6.2 | v0.2 | Parent uploads a PDF; specialist downloads it; child cannot see the list. |
-| M7 | US-7.1 | v0.2 | Completion rate for a seeded week matches the expected value, in total and by area. |
-| M8 | US-8.1 – US-8.3 | v0.2 | Parent and specialist get different mock summaries, labelled "AI-generated" with source links. |
-
-| Milestone | Week | Content |
+| ID | Requirement | Priority |
 |---|---|---|
-| Walking skeleton (v0.0) | 5 | Frontend, backend and database connected end to end; CI running. |
-| Release v0.1 | 8 | M1–M4; first end-to-end test running in CI. |
-| Release v0.2 | 10 | M1–M8; branch coverage ≥ 40 %; end-to-end tests for 3 critical flows. |
-| Release v1.0 | 12 | Final version; branch coverage ≥ 60 %; an end-to-end test for each of M1–M8. |
+| FR-M2-01 | The system shall let a parent link a registered specialist to their child by entering the specialist's email; the specialist then appears in the child's list of linked specialists with name and specialist type. | Must |
+| FR-M2-02 | The system shall show an error and link no one when the email does not belong to a registered specialist. | Must |
+| FR-M2-03 | The system shall not create a second link when the parent links a specialist who is already linked to the child. | Must |
+| FR-M2-04 | The system shall let a parent unlink a specialist from their child after a confirmation step. | Must |
+| FR-M2-05 | The system shall reject every request of an unlinked specialist about the child (schedule, tasks, entries, documents, statistics, AI summary), even when the specialist's token has not expired. | Must |
+| FR-M2-06 | The system shall show a specialist exactly the children they are currently linked to. | Must |
+
+### M3 – Weekly schedule
+
+| ID | Requirement | Priority |
+|---|---|---|
+| FR-M3-01 | The system shall let a parent or linked specialist add an event with title, date, start time and end time to the child's schedule. | Must |
+| FR-M3-02 | The system shall reject an event with a missing title or date, or with an end time before its start time, and show an error. | Must |
+| FR-M3-03 | The system shall show the events of a selected week (Monday to Sunday), ordered by day and time. | Must |
+| FR-M3-04 | The system shall show a child only their own events and give the child no option to add events. | Must |
+| FR-M3-05 | The system shall offer a monthly view of the schedule. | Could |
+
+### M4 – Tasks
+
+| ID | Requirement | Priority |
+|---|---|---|
+| FR-M4-01 | The system shall let a parent or linked specialist assign a task to the child with title, description, development area (Language, Motor skills, Social-emotional, Cognitive or Self-care) and due date; a new task has the status "not done". | Must |
+| FR-M4-02 | The system shall reject a task with a missing title, development area or due date and show an error. | Must |
+| FR-M4-03 | The system shall let a child mark their own task as done, which changes its status to "done". | Must |
+| FR-M4-04 | The system shall reject a child's request to change a task of another child. | Must |
+| FR-M4-05 | The system shall show the user who assigned tasks the current status ("done" / "not done") of each of those tasks. | Must |
+| FR-M4-06 | The system shall support recurring tasks (for example every weekday). | Could |
+| FR-M4-07 | The system shall notify the child when a new task is assigned. | Could |
+
+### M5 – Specialist entries
+
+| ID | Requirement | Priority |
+|---|---|---|
+| FR-M5-01 | The system shall let a linked specialist add a dated entry (date and text) about the child; the entry shows the author's name and the date. | Must |
+| FR-M5-02 | The system shall reject an entry with empty text and show an error. | Must |
+| FR-M5-03 | The system shall let the author of an entry edit it; the entry then shows the new text and the mark "edited". | Must |
+| FR-M5-04 | The system shall reject an attempt to edit an entry written by another specialist. | Must |
+| FR-M5-05 | The system shall show the parent and every linked specialist all entries about the child, newest first. | Must |
+| FR-M5-06 | The system shall deny a child access to specialist entries, in the user interface and in the API. | Must |
+| FR-M5-07 | The system shall keep and show the earlier versions of an edited entry. | Could |
+
+### M6 – Documents
+
+| ID | Requirement | Priority |
+|---|---|---|
+| FR-M6-01 | The system shall let a parent or linked specialist upload a PDF, JPEG or PNG file of at most 10 MB; the document list shows its name, type, uploader and upload date. | Must |
+| FR-M6-02 | The system shall reject a file of another type or larger than 10 MB, show an error and not store the file. | Must |
+| FR-M6-03 | The system shall let a parent or linked specialist view a document in the browser and download it with its original name. | Must |
+| FR-M6-04 | The system shall deny a child and an unlinked specialist access to the document list and to document files. | Must |
+| FR-M6-05 | The system shall let the uploader share a document with only some of the linked specialists. | Could |
+
+### M7 – Weekly statistics
+
+| ID | Requirement | Priority |
+|---|---|---|
+| FR-M7-01 | The system shall show, for a selected week, the child's task completion rate as the percentage of the tasks due that week that are done. | Must |
+| FR-M7-02 | The system shall show a separate completion rate for each development area that has tasks due in the selected week. | Must |
+| FR-M7-03 | The system shall show a message that there are no tasks, instead of 0 %, for a week without tasks. | Must |
+
+### M8 – Role-based AI summary
+
+| ID | Requirement | Priority |
+|---|---|---|
+| FR-M8-01 | The system shall give a parent an AI summary of the child's week, written in plain language for parents. | Must |
+| FR-M8-02 | The system shall give a linked specialist an AI summary of the child's week written for specialists, using a different prompt than the parent version. | Must |
+| FR-M8-03 | The system shall build the summary prompt only from the week's records that the reader is allowed to see. | Must |
+| FR-M8-04 | The system shall label each summary "AI-generated" and list the records it is based on, each with a link to the record. | Must |
+| FR-M8-05 | The system shall always add to the prompt the fixed instruction not to give a diagnosis, not to suggest a treatment and not to make decisions, and shall show the note "Bu bir yapay zekâ önerisidir; karar size aittir." with every summary. | Must |
+| FR-M8-06 | The system shall say that there is nothing to summarize, without calling the AI provider, for a week without records. | Must |
+| FR-M8-07 | The system shall show a clear error message when the AI provider is unreachable or returns an error, while the rest of the page keeps working. | Must |
+| FR-M8-08 | The system shall, in mock mode (tests and CI), return a fixed summary text for each reader role without any network call. | Must |
+| FR-M8-09 | The system shall let the reader mark a summary as "helpful" or "incorrect", save the choice and show it as selected. | Must |
+
+### Jira Tasks and Sprints
+
+Each Jira story under the module epics M1–M8 implements a group of requirements. Assignees and sprints are as in Jira on 31 October 2026 (Sprint 2 = weeks 6–7, Sprint 3 = week 8, Sprint 4 = weeks 9–10; see `docs/PMP.md`).
+
+| Requirements | Jira task | Assignee | Sprint | Release |
+|---|---|---|---|---|
+| FR-M1-01 … FR-M1-03 | TF383-37 – Log in and log out | Mert Akdemir | Sprint 2 | v0.1 |
+| FR-M1-04, FR-M1-05 | TF383-38 – Role-based access to pages and API | Mert Akdemir | Sprint 2 | v0.1 |
+| FR-M2-01 … FR-M2-03 | TF383-39 – Link a specialist by email | Mert Akdemir | Sprint 2 | v0.1 |
+| FR-M2-04, FR-M2-05 | TF383-40 – Unlink a specialist | Mert Akdemir | Sprint 2 | v0.1 |
+| FR-M2-06 | TF383-41 – Specialist sees linked children | Mert Akdemir | Sprint 2 | v0.1 |
+| FR-M3-01, FR-M3-02 | TF383-42 – Add an event to the schedule | Batın Abiş | Sprint 2 | v0.1 |
+| FR-M3-03, FR-M3-04 | TF383-43 – Weekly schedule view | Batın Abiş | Sprint 2 | v0.1 |
+| FR-M4-01, FR-M4-02 | TF383-44 – Assign a task | Mert Akdemir | Sprint 3 | v0.1 |
+| FR-M4-03, FR-M4-04 | TF383-45 – Child marks a task done | Mert Akdemir | Sprint 3 | v0.1 |
+| FR-M4-05 | TF383-46 – Assigner sees task status | Batın Abiş | Sprint 3 | v0.1 |
+| FR-M5-01, FR-M5-02 | TF383-47 – Add a dated entry | Batın Abiş | Sprint 4 | v0.2 |
+| FR-M5-03, FR-M5-04 | TF383-48 – Edit own entry | Batın Abiş | Sprint 4 | v0.2 |
+| FR-M5-05, FR-M5-06 | TF383-49 – Read entries, hidden from the child | Batın Abiş | Sprint 4 | v0.2 |
+| FR-M6-01, FR-M6-02 | TF383-50 – Upload a PDF or image | Batın Abiş | Sprint 2 | v0.2 |
+| FR-M6-03, FR-M6-04 | TF383-51 – View and download documents | Batın Abiş | Sprint 2 | v0.2 |
+| FR-M7-01 … FR-M7-03 | TF383-52 – Weekly completion rate, total and by area | Batın Abiş | Sprint 4 | v0.2 |
+| FR-M8-01 … FR-M8-08 | TF383-53 – Role-based weekly AI summary | Mert Akdemir | Sprint 4 | v0.2 |
+| FR-M8-09 | TF383-54 – Helpful / incorrect feedback on a summary | Mert Akdemir | Sprint 4 | v0.2 |
+
+The Could requirements (FR-M3-05, FR-M4-06, FR-M4-07, FR-M5-07, FR-M6-05) have no Jira task yet; they get one only if time allows after v1.0 scope is done.
 
 ---
 
-## 7. Open questions for the test and quality team
+## 3. Non-Functional Requirements
 
-1. Is a sign-up screen expected, or are seeded accounts enough (A-1)?
-2. Are the five development areas in Section 1.3 enough for the statistics in M7?
-3. Is the 10 MB upload limit (US-6.1) acceptable for the documents you plan to test with?
-4. Which three flows should be the "critical flows" for the v0.2 end-to-end tests? Our proposal: login by role (M1), assigning and completing a task (M4), and blocking an unlinked specialist (M2).
+| ID | Category | Requirement |
+|---|---|---|
+| NFR-01 | Security | Passwords are stored only as bcrypt hashes; the database holds no plain-text password. |
+| NFR-02 | Security | Every API request about a child is checked against the current parent or specialist link in the database, not only against the token; an unlinked specialist with an unexpired token gets 403. |
+| NFR-03 | Privacy | The JWT secret and the AI provider key are read only from the backend's `.env` file and are never in frontend code or in the repository; only synthetic seed data is used. |
+| NFR-04 | Performance | With the seed data, every page loads in under 2 seconds on a normal laptop; a live AI summary appears within 15 seconds or an error message is shown. |
+| NFR-05 | Maintainability | CI runs the backend, frontend and end-to-end tests on every pull request; branch coverage is at least 40 % at v0.2 and at least 60 % at v1.0. |
+
+---
+
+## 4. Critical Flows and Acceptance Criteria
+
+| Flow | Related requirements | Acceptance criteria |
+|---|---|---|
+| Flow 1: Log in by role | FR-M1-01, FR-M1-04 | **Given** the seeded parent, specialist and child accounts, **When** each logs in with the correct password, **Then** each lands on their own start screen, and opening another role's page by its address is denied. |
+| Flow 2: Assign and complete a task | FR-M4-01, FR-M4-03, FR-M4-05 | **Given** a specialist linked to a child, **When** the specialist assigns a task and the child marks it as done, **Then** the child sees the task in their list and the specialist sees its status as "done". |
+| Flow 3: Unlinked specialist is blocked | FR-M2-04, FR-M2-05 | **Given** a linked specialist who is logged in, **When** the parent unlinks the specialist and the specialist then requests the child's tasks with the same unexpired token, **Then** the API answers 403 and returns no data about the child. |
+
+---
+
+## 5. Use Case Diagram (optional)
+
+```mermaid
+flowchart LR
+    parent["Parent"]
+    specialist["Specialist"]
+    child["Child"]
+
+    subgraph platform["AI-Assisted Child Development Platform"]
+        m1(["Log in and log out (M1)"])
+        m2(["Link or unlink a specialist (M2)"])
+        m3a(["Add events to the weekly schedule (M3)"])
+        m3b(["View the weekly schedule (M3)"])
+        m4a(["Assign tasks and follow their status (M4)"])
+        m4b(["See own tasks and mark them as done (M4)"])
+        m5a(["Add and edit own entries (M5)"])
+        m5b(["Read specialist entries (M5)"])
+        m6(["Upload, view and download documents (M6)"])
+        m7(["View weekly statistics (M7)"])
+        m8(["Read and rate the weekly AI summary (M8)"])
+    end
+
+    parent --- m1 & m2 & m3a & m3b & m4a & m5b & m6 & m7 & m8
+    specialist --- m1 & m3a & m3b & m4a & m5a & m5b & m6 & m7 & m8
+    m1 & m3b & m4b --- child
+```
+
+In the diagram, "Specialist" means a specialist who is linked to the child (M2).
+
+---
+
+## 6. Change Log
+
+| Date | Change | By |
+|---|---|---|
+| 2026-10-25 | First draft with user stories US-1.1 … US-8.3 | 383-G9 |
+| 2026-10-31 | Rewritten in the course template: FR-M1-01 … FR-M8-09 replace user stories US-1.1 … US-8.3; NFR-01 … NFR-05 replace NFR-1 … NFR-9; three critical flows added; optional extensions kept as Could requirements; AI task suggestions dropped because the AI only summarizes records; Jira tasks and sprints table added | Mert Akdemir |
