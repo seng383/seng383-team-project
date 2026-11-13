@@ -15,18 +15,26 @@ export function AuthProvider({ children }) {
     setUser(null);
   }
 
+  function loadUser() {
+    api('/api/auth/me')
+      .then(setUser)
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }
+
   useEffect(() => {
     setUnauthorizedHandler(clearSession);
-    if (getToken()) {
-      api('/api/auth/me')
-        .then(setUser)
-        .catch(() => {})
-        .finally(() => setLoading(false));
-    }
+    if (getToken()) loadUser();
 
-    // After logout the browser can bring back a logged-in page from its back/forward cache.
+    // The back/forward cache can bring back the page of an earlier session: since then the token may be
+    // gone or belong to someone else, so nothing of the restored user is kept.
     function onPageShow(event) {
-      if (event.persisted && !getToken()) setUser(null);
+      if (!event.persisted) return;
+      setUser(null);
+      if (getToken()) {
+        setLoading(true);
+        loadUser();
+      }
     }
     window.addEventListener('pageshow', onPageShow);
     return () => window.removeEventListener('pageshow', onPageShow);

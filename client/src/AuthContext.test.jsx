@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './AuthContext.jsx';
 import { mockApi, requestTo } from './testUtils.js';
 
 const parent = { id: 1, name: 'Ayşe Demir', role: 'parent' };
+const coach = { id: 5, name: 'Zeynep Arslan', role: 'specialist' };
 
 function Probe() {
   const { user, loading, login, logout } = useAuth();
@@ -24,6 +25,12 @@ function renderProbe() {
       <Probe />
     </AuthProvider>
   );
+}
+
+function restoreFromBackForwardCache() {
+  act(() => {
+    window.dispatchEvent(Object.assign(new Event('pageshow'), { persisted: true }));
+  });
 }
 
 describe('AuthContext', () => {
@@ -120,10 +127,51 @@ describe('AuthContext', () => {
     await screen.findByText('Ayşe Demir');
 
     sessionStorage.clear();
-    act(() => {
-      window.dispatchEvent(Object.assign(new Event('pageshow'), { persisted: true }));
-    });
+    restoreFromBackForwardCache();
 
     expect(screen.getByTestId('state')).toHaveTextContent('logged out');
+  });
+
+  test('a restored page drops the old user and asks the API whose the stored token is now (FR-M1-03)', async () => {
+    setToken('token-of-the-parent');
+    mockApi({ 'GET /api/auth/me': { body: parent } });
+    renderProbe();
+    await screen.findByText('Ayşe Demir');
+
+    setToken('token-of-the-coach');
+    const fetchMock = mockApi({ 'GET /api/auth/me': { body: coach } });
+    restoreFromBackForwardCache();
+
+    expect(screen.getByTestId('state')).toHaveTextContent('loading');
+    expect(await screen.findByText('Zeynep Arslan')).toBeInTheDocument();
+    expect(fetchMock.mock.lastCall[1].headers.Authorization).toBe('Bearer token-of-the-coach');
+  });
+
+  test('a restored page does not keep the old user when the server cannot be reached', async () => {
+    setToken('token-of-the-parent');
+    mockApi({ 'GET /api/auth/me': { body: parent } });
+    renderProbe();
+    await screen.findByText('Ayşe Demir');
+
+    setToken('token-of-the-coach');
+    mockApi({});
+    restoreFromBackForwardCache();
+
+    expect(await screen.findByText('logged out')).toBeInTheDocument();
+    expect(getToken()).toBe('token-of-the-coach');
+  });
+
+  test('the pageshow of a normal page load does not ask the API again', async () => {
+    setToken('abc');
+    const fetchMock = mockApi({ 'GET /api/auth/me': { body: parent } });
+    renderProbe();
+    await screen.findByText('Ayşe Demir');
+
+    act(() => {
+      window.dispatchEvent(Object.assign(new Event('pageshow'), { persisted: false }));
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId('state')).toHaveTextContent('Ayşe Demir');
   });
 });

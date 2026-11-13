@@ -48,11 +48,11 @@ test('a child typing the address of the parent page sees access denied', async (
   await expect(page.getByRole('heading', { name: 'Ebeveyn paneli' })).toHaveCount(0);
 });
 
-test('the API answers 403 when a parent calls a child-only endpoint directly', async ({ page, request }) => {
-  await logIn(page, 'parent@demo.test');
-  await expect(page.getByRole('heading', { name: 'Ebeveyn paneli' })).toBeVisible();
+test('the API answers 403 when a child calls a parent and specialist endpoint directly', async ({ page, request }) => {
+  await logIn(page, 'child@demo.test');
+  await expect(page.getByRole('heading', { name: 'Görevlerim' })).toBeVisible();
 
-  const res = await request.get('/api/tasks', {
+  const res = await request.get('/api/children', {
     headers: { Authorization: `Bearer ${await storedToken(page)}` },
   });
 
