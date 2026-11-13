@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600" font-family="system-ui, sans-serif" font-size="14">
+  <title>Uzman notları (M5) – taslak</title>
+  <rect width="960" height="600" fill="#ffffff"/>
+
+  <!-- Üst çubuk -->
+  <rect width="960" height="56" fill="#f2f2f2"/>
+  <line x1="0" y1="56" x2="960" y2="56" stroke="#999999"/>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="752" y="16" width="80" height="24" rx="12"/>
+    <rect x="848" y="12" width="88" height="32" rx="4"/>
+  </g>
+  <g fill="#333333">
+    <text x="24" y="35" font-size="18" font-weight="bold">Çocuk Gelişim Platformu</text>
+    <text x="740" y="33" text-anchor="end">Elif Kaya</text>
+    <text x="792" y="33" font-size="13" text-anchor="middle">Uzman</text>
+    <text x="892" y="33" text-anchor="middle">Çıkış yap</text>
+  </g>
+
+  <!-- Çocuk sekmeleri -->
+  <line x1="0" y1="104" x2="960" y2="104" stroke="#999999"/>
+  <line x1="124" y1="68" x2="124" y2="92" stroke="#999999"/>
+  <g fill="#333333">
+    <text x="24" y="86" font-size="16" font-weight="bold">Can Demir</text>
+    <text x="144" y="86">Haftalık program</text>
+    <text x="289" y="86">Görevler</text>
+    <text x="376" y="86" font-weight="bold">Uzman notları</text>
+    <text x="498" y="86">Belgeler</text>
+    <text x="582" y="86">İstatistikler</text>
+    <text x="683" y="86">Haftalık özet</text>
+  </g>
+  <rect x="376" y="101" width="94" height="3" fill="#333333"/>
+
+  <!-- Yeni not formu -->
+  <rect x="24" y="120" width="320" height="340" rx="8" fill="#f2f2f2" stroke="#999999"/>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="44" y="186" width="280" height="36" rx="4"/>
+    <rect x="44" y="252" width="280" height="112" rx="4" stroke="#333333" stroke-width="2"/>
+  </g>
+  <circle cx="51" cy="383" r="7" fill="#ffffff" stroke="#333333"/>
+  <rect x="44" y="404" width="280" height="36" rx="4" fill="#3b6ea5"/>
+  <g fill="#333333">
+    <text x="44" y="150" font-size="16" font-weight="bold">Yeni not</text>
+    <text x="44" y="178" font-size="13" font-weight="bold">Tarih</text>
+    <text x="56" y="209">31.10.2026</text>
+    <text x="44" y="244" font-size="13" font-weight="bold">Not</text>
+    <text x="56" y="274" font-style="italic">Gözleminizi yazın…</text>
+    <text x="51" y="387" font-size="11" font-weight="bold" text-anchor="middle">!</text>
+    <text x="64" y="388" font-size="13">Not metni boş olamaz.</text>
+  </g>
+  <text x="184" y="427" font-weight="bold" text-anchor="middle" fill="#ffffff">Notu kaydet</text>
+
+  <!-- Not listesi: en yeni üstte -->
+  <g fill="#f2f2f2" stroke="#999999">
+    <rect x="368" y="160" width="568" height="112" rx="6"/>
+    <rect x="368" y="284" width="568" height="96" rx="6"/>
+    <rect x="368" y="392" width="568" height="96" rx="6"/>
+  </g>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="470" y="194" width="76" height="18" rx="9"/>
+    <rect x="832" y="172" width="88" height="30" rx="4"/>
+    <rect x="832" y="404" width="88" height="30" rx="4"/>
+  </g>
+  <g fill="#333333">
+    <text x="368" y="146" font-size="16" font-weight="bold">Tüm notlar</text>
+    <text x="936" y="146" font-size="12" text-anchor="end">En yeni üstte</text>
+    <g font-weight="bold">
+      <text x="388" y="186">Elif Kaya · Öğretmen</text>
+      <text x="388" y="310">Murat Şahin · Psikolog</text>
+      <text x="388" y="418">Elif Kaya · Öğretmen</text>
+    </g>
+    <g font-size="12">
+      <text x="388" y="206">30.10.2026</text>
+      <text x="508" y="207" text-anchor="middle">düzenlendi</text>
+      <text x="388" y="330">28.10.2026</text>
+      <text x="388" y="438">23.10.2026</text>
+    </g>
+    <g font-size="13">
+      <text x="876" y="192" text-anchor="middle">Düzenle</text>
+      <text x="876" y="424" text-anchor="middle">Düzenle</text>
+      <text x="388" y="234">Okuma çalışmalarına düzenli katıldı. Yeni öğrendiği kelimeleri</text>
+      <text x="388" y="254">cümle içinde kullanmaya başladı.</text>
+      <text x="388" y="358">Grup oyununda sırasını bekledi ve oyuncaklarını arkadaşlarıyla paylaştı.</text>
+      <text x="388" y="466">Harf seslerini tanımada ilerleme var; iki heceli kelimeleri okuyabiliyor.</text>
+    </g>
+  </g>
+
+  <!-- Not -->
+  <rect x="24" y="548" width="912" height="32" rx="4" fill="none" stroke="#999999" stroke-dasharray="4 4"/>
+  <text x="40" y="568" font-size="12" font-style="italic" fill="#333333">Not: Yalnızca notun yazarı düzenleyebilir; düzenlenen not “düzenlendi” işaretiyle gösterilir. Çocuk notları göremez.</text>
+</svg>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600" font-family="system-ui, sans-serif" font-size="14">
+  <title>Haftalık istatistikler (M7) – taslak</title>
+  <rect width="960" height="600" fill="#ffffff"/>
+
+  <!-- Üst çubuk -->
+  <rect width="960" height="56" fill="#f2f2f2"/>
+  <line x1="0" y1="56" x2="960" y2="56" stroke="#999999"/>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="752" y="16" width="80" height="24" rx="12"/>
+    <rect x="848" y="12" width="88" height="32" rx="4"/>
+  </g>
+  <g fill="#333333">
+    <text x="24" y="35" font-size="18" font-weight="bold">Çocuk Gelişim Platformu</text>
+    <text x="740" y="33" text-anchor="end">Elif Kaya</text>
+    <text x="792" y="33" font-size="13" text-anchor="middle">Uzman</text>
+    <text x="892" y="33" text-anchor="middle">Çıkış yap</text>
+  </g>
+
+  <!-- Çocuk sekmeleri -->
+  <line x1="0" y1="104" x2="960" y2="104" stroke="#999999"/>
+  <line x1="124" y1="68" x2="124" y2="92" stroke="#999999"/>
+  <g fill="#333333">
+    <text x="24" y="86" font-size="16" font-weight="bold">Can Demir</text>
+    <text x="144" y="86">Haftalık program</text>
+    <text x="289" y="86">Görevler</text>
+    <text x="376" y="86">Uzman notları</text>
+    <text x="498" y="86">Belgeler</text>
+    <text x="582" y="86" font-weight="bold">İstatistikler</text>
+    <text x="683" y="86">Haftalık özet</text>
+  </g>
+  <rect x="582" y="101" width="73" height="3" fill="#333333"/>
+
+  <!-- Hafta seçici -->
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="24" y="120" width="36" height="36" rx="4"/>
+    <rect x="68" y="120" width="232" height="36" rx="4"/>
+    <rect x="308" y="120" width="36" height="36" rx="4"/>
+  </g>
+  <g fill="none" stroke="#333333" stroke-width="2">
+    <path d="M46 130 L38 138 L46 146"/>
+    <path d="M322 130 L330 138 L322 146"/>
+  </g>
+  <text x="184" y="143" font-weight="bold" text-anchor="middle" fill="#333333">26 Ekim – 1 Kasım 2026</text>
+
+  <!-- Seçilen haftanın oranları -->
+  <rect x="24" y="172" width="592" height="348" rx="8" fill="#f2f2f2" stroke="#999999"/>
+  <g fill="#ffffff" stroke="#999999">
+    <rect x="44" y="268" width="552" height="14" rx="7"/>
+    <rect x="184" y="339" width="300" height="12" rx="6"/>
+    <rect x="184" y="373" width="300" height="12" rx="6"/>
+    <rect x="184" y="407" width="300" height="12" rx="6"/>
+    <rect x="184" y="441" width="300" height="12" rx="6"/>
+  </g>
+  <g fill="#999999">
+    <rect x="44" y="268" width="331" height="14" rx="7"/>
+    <rect x="184" y="339" width="150" height="12" rx="6"/>
+    <rect x="184" y="407" width="300" height="12" rx="6"/>
+    <rect x="184" y="441" width="300" height="12" rx="6"/>
+  </g>
+  <g fill="#333333">
+    <text x="44" y="202" font-size="16" font-weight="bold">Haftalık tamamlanma oranı</text>
+    <text x="44" y="252" font-size="40" font-weight="bold">%60</text>
+    <text x="160" y="246">5 görevden 3'ü tamamlandı</text>
+    <text x="44" y="318" font-weight="bold">Gelişim alanlarına göre</text>
+    <g font-size="13">
+      <text x="44" y="350">Dil</text>
+      <text x="44" y="384">Motor beceriler</text>
+      <text x="44" y="418">Sosyal-duygusal</text>
+      <text x="44" y="452">Öz bakım</text>
+      <text x="500" y="350">%50 (1/2)</text>
+      <text x="500" y="384">%0 (0/1)</text>
+      <text x="500" y="418">%100 (1/1)</text>
+      <text x="500" y="452">%100 (1/1)</text>
+    </g>
+    <text x="44" y="496" font-size="12">Bu hafta görevi olmayan alanlar (ör. Bilişsel) gösterilmez.</text>
+  </g>
+
+  <!-- Görevsiz hafta durumu -->
+  <rect x="640" y="172" width="296" height="200" rx="8" fill="none" stroke="#999999" stroke-dasharray="4 4"/>
+  <rect x="656" y="208" width="264" height="32" rx="4" fill="#ffffff" stroke="#999999"/>
+  <rect x="656" y="252" width="264" height="104" rx="6" fill="#f2f2f2" stroke="#999999"/>
+  <circle cx="788" cy="280" r="12" fill="#ffffff" stroke="#333333"/>
+  <g fill="#333333">
+    <text x="656" y="196" font-size="12" font-style="italic">Görevsiz hafta seçilince (%0 yerine):</text>
+    <text x="788" y="229" font-size="13" font-weight="bold" text-anchor="middle">2 Kasım – 8 Kasım 2026</text>
+    <text x="788" y="285" font-weight="bold" text-anchor="middle">i</text>
+    <text x="788" y="318" font-size="16" font-weight="bold" text-anchor="middle">Bu hafta görev yok</text>
+    <text x="788" y="340" font-size="12" text-anchor="middle">Bu haftaya son tarihli görev atanmamış.</text>
+  </g>
+
+  <!-- Not -->
+  <rect x="24" y="548" width="912" height="32" rx="4" fill="none" stroke="#999999" stroke-dasharray="4 4"/>
+  <text x="40" y="568" font-size="12" font-style="italic" fill="#333333">Not: Oran, seçilen haftada son tarihi olan görevlerden “Yapıldı” olanların yüzdesidir.</text>
+</svg>
