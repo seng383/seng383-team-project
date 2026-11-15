@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from './api.js';
 import Avatar from './Avatar.jsx';
+import ChildTabs from './ChildTabs.jsx';
 import PageLayout from './PageLayout.jsx';
 
 const SPECIALIST_TYPES = {
@@ -80,6 +81,7 @@ function ChildCard({ child }) {
         <Avatar name={child.name} />
         {child.name}
       </h2>
+      <ChildTabs childId={child.id} />
 
       {!specialists && !loadFailed && <p>Uzmanlar yükleniyor…</p>}
       {loadFailed && (

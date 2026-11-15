@@ -76,10 +76,31 @@ describe('requireChildAccess', () => {
     expect(res.body).toEqual({ error: 'Forbidden' });
   });
 
-  test('stops a child, whose only way to data in M2 is GET /api/tasks', async () => {
-    const res = await get('child@demo.test');
+  // M3 lets the child read their own schedule (FR-M3-04); the routers keep the child role out of everything else.
+  test('lets a child through for their own id only, not for another child, even a sibling', async () => {
+    const sibling = db
+      .prepare("INSERT INTO users (name, email, password_hash, role) VALUES ('Ali Demir', 'sibling@demo.test', 'x', 'child')")
+      .run().lastInsertRowid;
+    db.prepare('INSERT INTO children (user_id, parent_id) VALUES (?, ?)').run(sibling, idOf(db, 'parent@demo.test'));
+
+    const own = await get('child@demo.test');
+    const other = await get('child@demo.test', sibling);
+
+    expect(own.status).toBe(200);
+    expect(other.status).toBe(403);
+    expect(other.body).toEqual({ error: 'Forbidden' });
+  });
+
+  test.each([
+    ['%s.0', (id) => `${id}.0`],
+    ['%se0', (id) => `${id}e0`],
+    ['0%s', (id) => `0${id}`],
+    ['+%s', (id) => `+${id}`],
+  ])('does not read %s as the own id of a child', async (_, spell) => {
+    const res = await get('child@demo.test', spell(childId));
 
     expect(res.status).toBe(403);
+    expect(res.body).toEqual({ error: 'Forbidden' });
   });
 
   test.each(['abc', '1.5', '0', '-1', '1e0', '2abc', '007', '999999', '99999999999999999999'])(

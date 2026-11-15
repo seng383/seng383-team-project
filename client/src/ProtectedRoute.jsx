@@ -3,6 +3,7 @@ import { START_PATHS, useAuth } from './AuthContext.jsx';
 import PageLayout from './PageLayout.jsx';
 
 // Only decides what to show: the API checks the token and the role again on every request.
+// `role` is one role or a list of the roles that may open the page.
 export default function ProtectedRoute({ role, children }) {
   const { user, loading } = useAuth();
 
@@ -12,7 +13,7 @@ export default function ProtectedRoute({ role, children }) {
   if (!user) {
     return <Navigate to="/login" replace />;
   }
-  if (user.role !== role) {
+  if (![role].flat().includes(user.role)) {
     return (
       <PageLayout title="Erişim engellendi">
         <p role="alert">Bu sayfaya erişim izniniz yok.</p>

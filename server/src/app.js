@@ -3,6 +3,7 @@ const { loadJwtSecret, createRequireAuth } = require('./middleware/auth');
 const { createChildAccess } = require('./middleware/childAccess');
 const { authRoutes } = require('./routes/auth');
 const { childrenRoutes } = require('./routes/children');
+const { eventsRoutes } = require('./routes/events');
 
 // Builds the Express app around a database connection, so tests can pass an in-memory database.
 function createApp(db) {
@@ -24,6 +25,8 @@ function createApp(db) {
   });
 
   app.use('/api/auth', authRoutes(db, jwtSecret, requireAuth));
+  // Ahead of the children router, which keeps the child role out of everything else under /api/children.
+  app.use('/api/children/:childId/events', eventsRoutes(db, requireAuth, requireChildAccess));
   app.use('/api/children', childrenRoutes(db, requireAuth, requireChildAccess));
 
   // A child always gets their own tasks, whatever childId they send.

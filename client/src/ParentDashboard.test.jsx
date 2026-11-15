@@ -62,6 +62,18 @@ describe('ParentDashboard', () => {
     expect(await screen.findAllByTestId('specialist')).toHaveLength(2);
   });
 
+  test('offers the pages of each child under the name, starting with the weekly schedule (FR-M3-03)', async () => {
+    renderDashboard({
+      'GET /api/children': { body: [can, { id: 9, name: 'Ali Demir' }] },
+      'GET /api/children/9/specialists': { body: [] },
+    });
+
+    const ali = (await screen.findByRole('heading', { name: 'Ali Demir' })).closest('section');
+    const canCard = screen.getByRole('heading', { name: 'Can Demir' }).closest('section');
+    expect(within(canCard).getByRole('link', { name: 'Haftalık program' })).toHaveAttribute('href', '/children/2/schedule');
+    expect(within(ali).getByRole('link', { name: 'Haftalık program' })).toHaveAttribute('href', '/children/9/schedule');
+  });
+
   test('says so when the parent has no child', async () => {
     renderDashboard({ 'GET /api/children': { body: [] } });
 

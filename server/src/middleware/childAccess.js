@@ -8,8 +8,15 @@ function createChildAccess(db) {
   // A malformed id gets the same answer as a child without access, so nobody learns which children exist.
   // Digits only, because Number() would read "2.0" or "2e0" as the real child 2.
   function canAccessChild(user, childId) {
+    if (!/^[1-9]\d*$/.test(childId)) {
+      return false;
+    }
+    // A child reaches only their own id; each router still decides what a child may do there.
+    if (user.role === 'child') {
+      return Number(childId) === user.id;
+    }
     const linkQuery = linkQueries[user.role];
-    return /^[1-9]\d*$/.test(childId) && linkQuery !== undefined && linkQuery.get(Number(childId), user.id) !== undefined;
+    return linkQuery !== undefined && linkQuery.get(Number(childId), user.id) !== undefined;
   }
 
   function requireChildAccess(req, res, next) {

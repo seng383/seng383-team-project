@@ -48,6 +48,16 @@ describe('SpecialistChildrenPage', () => {
     expect(rows[1]).toHaveTextContent('Ebeveyn: Selin Yıldız · Bağlantı tarihi: 03.09.2026');
   });
 
+  test('links each child to its weekly schedule next to "Görüntüle" (FR-M3-03)', async () => {
+    renderPage();
+
+    const rows = await screen.findAllByTestId('child');
+
+    expect(within(rows[0]).getByRole('link', { name: 'Haftalık program' })).toHaveAttribute('href', '/children/2/schedule');
+    expect(within(rows[1]).getByRole('link', { name: 'Haftalık program' })).toHaveAttribute('href', '/children/7/schedule');
+    expect(within(rows[0]).getByRole('button', { name: 'Görüntüle' })).toBeInTheDocument();
+  });
+
   test('says so when no child is linked', async () => {
     renderPage({ 'GET /api/children': { body: [] } });
 
