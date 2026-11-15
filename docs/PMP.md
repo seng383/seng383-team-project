@@ -105,7 +105,7 @@ State on 15 November 2026, the last day of Sprint 2 (weeks 6–7). Release v0.1 
 | DESIGN – Design document and walking skeleton | Design document (week 6), walking skeleton v0.0 | Done |
 | M1 – Login and roles | Release v0.1 | Done |
 | M2 – Linking specialists | Release v0.1 | Done |
-| M3 – Weekly schedule | Release v0.1 | In progress |
+| M3 – Weekly schedule | Release v0.1 | Done |
 | M4 – Tasks | Release v0.1 | In progress |
 | M6 – Documents | Pulled forward into Sprint 2 (not part of v0.1) | In progress |
 | M5, M7, M8 | Release v0.2 (Sprint 4) | Not started |
