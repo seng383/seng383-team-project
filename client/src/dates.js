@@ -47,3 +47,9 @@ export function fullDate(isoDate) {
   const [year, month, day] = isoDate.split('-');
   return `${day}.${month}.${year}`;
 }
+
+// "28 Ekim Çarşamba", as the due date on the child's task screen.
+export function dayMonthAndName(isoDate) {
+  const date = toDate(isoDate);
+  return `${date.getDate()} ${MONTH_NAMES[date.getMonth()]} ${DAY_NAMES[(date.getDay() + 6) % 7]}`;
+}

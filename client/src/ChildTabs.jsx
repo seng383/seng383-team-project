@@ -2,7 +2,10 @@ import { NavLink } from 'react-router-dom';
 
 // The pages about one child for a parent or a specialist, in the order of the mockups. A module adds its page
 // with one entry here and one route under /children/:childId in App.jsx.
-export const CHILD_TABS = [{ label: 'Haftalık program', path: 'schedule' }];
+export const CHILD_TABS = [
+  { label: 'Haftalık program', path: 'schedule' },
+  { label: 'Görevler', path: 'tasks' },
+];
 
 const tabStyle = {
   padding: '8px 16px',

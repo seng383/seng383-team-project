@@ -6,6 +6,7 @@ import LoginPage from './LoginPage.jsx';
 import ParentDashboard from './ParentDashboard.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import SpecialistChildrenPage from './SpecialistChildrenPage.jsx';
+import TasksPage from './TasksPage.jsx';
 import WeeklySchedulePage, { ChildSchedulePage } from './WeeklySchedulePage.jsx';
 
 function Home() {
@@ -65,6 +66,7 @@ export default function App() {
             }
           >
             <Route path="schedule" element={<WeeklySchedulePage />} />
+            <Route path="tasks" element={<TasksPage />} />
           </Route>
           <Route path="*" element={<Home />} />
         </Routes>

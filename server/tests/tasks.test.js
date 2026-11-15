@@ -114,6 +114,17 @@ describe('GET /api/tasks', () => {
     expect(res.body).toEqual({ error: 'Forbidden' });
   });
 
+  test.each([
+    ['%se0', (id) => `${id}e0`],
+    ['0%s', (id) => `0${id}`],
+    ['+%s', (id) => `+${id}`],
+  ])('does not read %s as the real child either', async (_, spell) => {
+    const res = await tasksAs('parent@demo.test', `?childId=${encodeURIComponent(spell(idOf('child@demo.test')))}`);
+
+    expect(res.status).toBe(403);
+    expect(res.body).toEqual({ error: 'Forbidden' });
+  });
+
   test('does not accept a childId sent twice', async () => {
     const childId = idOf('child@demo.test');
 
@@ -182,6 +193,83 @@ describe('GET /api/tasks', () => {
         developmentArea: 'language',
         dueDate: '2026-11-06',
         status: 'not_done',
+        completedAt: null,
+        assignedBy: idOf('teacher@demo.test'),
+        assignedByName: 'Elif Kaya',
+      },
+    ]);
+  });
+
+  // A task of the seeded child with a chosen due date, assigner and status.
+  function addTask(title, dueDate, { area = 'self_care', assignedBy = idOf('parent@demo.test'), status = 'not_done', completedAt = null } = {}) {
+    const { lastInsertRowid } = db
+      .prepare(
+        'INSERT INTO tasks (child_id, assigned_by, title, development_area, due_date, status, completed_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+      )
+      .run(idOf('child@demo.test'), assignedBy, title, area, dueDate, status, completedAt);
+    return Number(lastInsertRowid);
+  }
+
+  test('orders the tasks by due date, then in the order they were assigned, for every role', async () => {
+    db.prepare('DELETE FROM tasks').run();
+    addTask('Resimli kitaptan 5 sayfa oku', '2026-10-30');
+    addTask('Hikâyeyi kendi cümlelerinle anlat', '2026-10-28');
+    addTask('Ayakkabı bağcıklarını bağla', '2026-10-30');
+    addTask('Makasla çizgi boyunca kes', '2026-11-02');
+    addTask('Oyunda sıranı bekle', '2026-09-15');
+
+    const parent = await tasksAs('parent@demo.test', `?childId=${idOf('child@demo.test')}`);
+    const child = await tasksAs('child@demo.test');
+
+    expect(parent.body.map((task) => task.title)).toEqual([
+      'Oyunda sıranı bekle',
+      'Hikâyeyi kendi cümlelerinle anlat',
+      'Resimli kitaptan 5 sayfa oku',
+      'Ayakkabı bağcıklarını bağla',
+      'Makasla çizgi boyunca kes',
+    ]);
+    expect(child.body).toEqual(parent.body);
+  });
+
+  test('gives each task its status, completion time and assigner, so the assigner can follow it (FR-M4-05)', async () => {
+    db.prepare('DELETE FROM tasks').run();
+    const childId = idOf('child@demo.test');
+    const teacherId = idOf('teacher@demo.test');
+    const psychologistId = idOf('psychologist@demo.test');
+    const done = addTask('Ayakkabı bağcıklarını bağla', '2026-10-29', {
+      assignedBy: teacherId,
+      status: 'done',
+      completedAt: '2026-10-29 16:45:00',
+    });
+    const open = addTask('Oyunda sıranı bekle', '2026-10-30', { area: 'social_emotional', assignedBy: psychologistId });
+
+    const res = await tasksAs('teacher@demo.test', `?childId=${childId}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([
+      {
+        id: done,
+        childId,
+        title: 'Ayakkabı bağcıklarını bağla',
+        description: null,
+        developmentArea: 'self_care',
+        dueDate: '2026-10-29',
+        status: 'done',
+        completedAt: '2026-10-29 16:45:00',
+        assignedBy: teacherId,
+        assignedByName: 'Elif Kaya',
+      },
+      {
+        id: open,
+        childId,
+        title: 'Oyunda sıranı bekle',
+        description: null,
+        developmentArea: 'social_emotional',
+        dueDate: '2026-10-30',
+        status: 'not_done',
+        completedAt: null,
+        assignedBy: psychologistId,
+        assignedByName: 'Murat Şahin',
       },
     ]);
   });
