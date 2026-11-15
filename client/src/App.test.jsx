@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { getToken, setToken } from './api.js';
 import App from './App.jsx';
@@ -11,8 +11,8 @@ const users = {
   child: { id: 2, name: 'Can Demir', role: 'child' },
 };
 const tasks = [
-  { id: 1, childId: 2, title: '20 dakika kitap oku', developmentArea: 'language', status: 'not_done' },
-  { id: 2, childId: 2, title: 'Ayakkabılarını bağla', developmentArea: 'self_care', status: 'done' },
+  { id: 1, childId: 2, title: '20 dakika kitap oku', developmentArea: 'language', dueDate: '2026-11-11', status: 'not_done' },
+  { id: 2, childId: 2, title: 'Ayakkabılarını bağla', developmentArea: 'self_care', dueDate: '2026-11-12', status: 'done' },
 ];
 
 // Opens an address the way a typed URL does: the session comes back from sessionStorage.
@@ -106,6 +106,47 @@ describe('App', () => {
       open('/child');
 
       expect(await screen.findByText('Henüz görevin yok.')).toBeInTheDocument();
+    });
+
+    // FR-M4-01: the development area and the due date of the mockup are under each task.
+    test('shows the development area and the due date with its day', async () => {
+      logInAs('child');
+
+      open('/child');
+
+      const items = await screen.findAllByTestId('task');
+      expect(items[0]).toHaveTextContent('Dil · Son gün: 11 Kasım Çarşamba');
+      expect(items[1]).toHaveTextContent('Öz bakım · Son gün: 12 Kasım Perşembe');
+    });
+
+    // FR-M4-03: only a task that is not done has the button, and the answer of the API replaces the task.
+    test('marks a task done through the API and shows its new status', async () => {
+      const fetchMock = logInAs('child', {
+        'PATCH /api/tasks/1': { body: { ...tasks[0], status: 'done', completedAt: '2026-11-11 10:00:00' } },
+      });
+
+      open('/child');
+
+      const [first, second] = await screen.findAllByTestId('task');
+      expect(within(second).queryByRole('button')).not.toBeInTheDocument();
+      fireEvent.click(within(first).getByRole('button', { name: 'Yapıldı olarak işaretle' }));
+
+      await waitFor(() => expect(first).toHaveTextContent('20 dakika kitap oku · Yapıldı'));
+      expect(within(first).queryByRole('button')).not.toBeInTheDocument();
+      expect(JSON.parse(requestTo(fetchMock, '/api/tasks/1').body)).toEqual({ status: 'done' });
+    });
+
+    test('keeps the task not done and says so when marking it fails', async () => {
+      logInAs('child', { 'PATCH /api/tasks/1': { status: 403 } });
+
+      open('/child');
+
+      const [first] = await screen.findAllByTestId('task');
+      fireEvent.click(within(first).getByRole('button', { name: 'Yapıldı olarak işaretle' }));
+
+      expect(await screen.findByRole('alert')).toHaveTextContent('Görev güncellenemedi. Lütfen tekrar deneyin.');
+      expect(first).toHaveTextContent('20 dakika kitap oku · Yapılmadı');
+      expect(within(first).getByRole('button', { name: 'Yapıldı olarak işaretle' })).toBeEnabled();
     });
 
     test('shows an error when the tasks cannot be loaded', async () => {
