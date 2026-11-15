@@ -92,14 +92,31 @@ Who does what in each sprint, as assigned in Jira on 31 October 2026.
 
 ## PMP-3. Progress Review: Mid-term (v0.1)
 
+State on 15 November 2026, the last day of Sprint 2 (weeks 6–7). Release v0.1 (M1–M4) is shown to the instructor in class in week 8.
+
 **Jira board screenshot:**  
 
 | Epic | Planned for this point | Status (Done / In progress / Not started) |
 |---|---|---|
-| | | |
-| | | |
+| PMP-1 – Project, Jira setup, team and roles | Section 1 | Done |
+| PMP-2 – Work packages (epics) and sprint plan | Section 2 | Done |
+| PMP-3 – Progress review: mid-term (v0.1) | This section | In progress |
+| SRS – Software requirements specification | Final SRS (week 6) | Done |
+| DESIGN – Design document and walking skeleton | Design document (week 6), walking skeleton v0.0 | Done |
+| M1 – Login and roles | Release v0.1 | Done |
+| M2 – Linking specialists | Release v0.1 | Done |
+| M3 – Weekly schedule | Release v0.1 | In progress |
+| M4 – Tasks | Release v0.1 | In progress |
+| M6 – Documents | Pulled forward into Sprint 2 (not part of v0.1) | In progress |
+| M5, M7, M8 | Release v0.2 (Sprint 4) | Not started |
+| PMP-4, PMP-5, PMP-6 | Later sprints | Not started |
 
 **Changes to the plan (if any):**
+
+- M4 moved from Sprint 3 (week 8) into Sprint 2, so that all of v0.1 (M1–M4) is finished by the end of week 7 and ready for the live demo in week 8.
+- M6 was pulled forward into Sprint 2 on 31 October. Its backend (upload, list, view and download) is done, but it is not needed for v0.1, so its screens move to Sprint 3.
+- Sprint 1 closed late. The walking skeleton PR was merged on 4 November instead of by 1 November, the v0.0 tag followed on 10 November, and Sprint 2 started late because of this.
+- The AI provider changed from GitHub Models to the Gemini API (TF383-53, merged with M2). Mock mode is unchanged, so tests and CI still need no API key.
 
 ---
 
